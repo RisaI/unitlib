@@ -1,0 +1,14 @@
+{
+  "include": ["src/**/*.ts"],
+  "exclude": ["dist"],
+  "compilerOptions": {
+    "module": "ES6",
+    "target": "ES2017",
+    "noImplicitAny": true,
+    "removeComments": true,
+    "preserveConstEnums": true,
+    "sourceMap": true,
+    "declaration": true,
+    "declarationDir": "dist/"
+  }
+}
