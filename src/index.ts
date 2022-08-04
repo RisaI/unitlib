@@ -1,4 +1,5 @@
 /// <reference path="./types.ts" />
 
-export { GenericUnit } from "./Unit";
-export * as definitions from "./definitions";
+export { Unit } from './Unit';
+export { UnitSystem } from './UnitSystem';
+export * as definitions from './definitions';
