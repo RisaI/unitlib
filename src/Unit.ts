@@ -48,7 +48,8 @@ export class Unit<
     }
 
     public isEqual(rhs: Unit<U, F, D>): boolean {
-        // TODO:
+        // TODO: factor equality
+        // ? Maybe do direct comparison without arithmetics
         const result = this.multiply(rhs.inverse());
         const factorEqual = result.factor.mul === 1 && result.factor.exp === 0;
 
@@ -56,15 +57,23 @@ export class Unit<
     }
 
     public pow(num: Fraction): Unit<U, F, D> {
-        const next = this.factor.exp * num.valueOf();
-        const rem = next - Math.floor(next);
+        const factor = { ...this.factor };
 
-        const factor = { ...this.factor, exp: Math.floor(next) };
-        this.factor.mul *= Math.pow(this.factor.base, rem);
+        if (factor.exp !== 0) {
+            const next = factor.exp * num.valueOf();
+            const rem = next - Math.floor(next);
 
-        return new Unit(this.unitSystem, factor, {
-            ...this.baseUnits,
-        });
+            factor.exp = Math.floor(next);
+            factor.mul *= Math.pow(factor.base, rem);
+        }
+
+        return new Unit(
+            this.unitSystem,
+            factor,
+            Object.fromEntries(
+                Object.entries(this.baseUnits).map(([k, v]) => [k, v.mul(num)]),
+            ) as Partial<Record<keyof U, Fraction>>,
+        );
     }
 
     public multiply(rhs: Unit<U, F, D>): Unit<U, F, D> {
@@ -83,6 +92,7 @@ export class Unit<
 
         let factor = { mul: 1, base: 10, exp: 0 };
         if (this.factor !== rhs.factor) {
+            // FIXME: ^^ object cmp
             const lhsFactor = this.factor;
             const rhsFactor = rhs.factor;
 
@@ -102,7 +112,8 @@ export class Unit<
                 };
             } else {
                 // TODO: hide the reminder in `mul`
-
+                console.log(lhsFactor);
+                console.log(rhsFactor);
                 throw new Error('Incompatible unit factors');
             }
         }

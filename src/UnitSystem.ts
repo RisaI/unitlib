@@ -104,15 +104,15 @@ export class UnitSystem<
         // Parse factor
         {
             const matches = factorRegex.exec(text);
-            text = text.slice(0, text[0].length);
+            text = text.slice(matches[0].length);
 
-            if (text[1]) {
-                factor.mul = Number.parseFloat(text[1]);
+            if (matches[1]) {
+                factor.mul = Number.parseFloat(matches[1]);
             }
 
-            if (text[2]) {
-                factor.base = Number.parseInt(text[3]);
-                factor.exp = Number.parseInt(text[4]);
+            if (matches[2]) {
+                factor.base = Number.parseInt(matches[3]);
+                factor.exp = Number.parseInt(matches[4]);
             }
         }
 
@@ -157,12 +157,15 @@ export class UnitSystem<
 
             let unit;
             for (let j = i; j <= text.length; ++j) {
-                if (text[j]?.match(/[A-Za-z]/)[0]) continue;
+                if (text[j]?.match(/[A-Za-z]/)?.[0]) continue;
 
                 if (i == j) {
                     throw unexpected(text[j]);
                 } else {
                     unit = text.slice(i, j);
+                    console.log(
+                        `unit: ${unit}, text[j] = ${text[j]}, text = ${text}`,
+                    );
                     i = j;
                     break;
                 }
@@ -191,18 +194,17 @@ export class UnitSystem<
                 } else {
                     // no bracket
                     for (let j = i + 1; j < text.length + 1; ++j) {
-                        if (text[j]?.match(/[\d]/)[0]) continue;
+                        if (text[j]?.match(/[\d]/)?.[0]) continue;
                         exp = new Fraction(text.slice(i + 1, j));
                         i = j + 1;
                         break;
                     }
                 }
-
-                // read exponent
             }
 
             if (denom) exp = exp.neg();
 
+            console.log(result);
             result = result.multiply(parseSingular(unit).pow(exp));
         }
 
