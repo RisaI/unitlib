@@ -21,7 +21,9 @@ export class Unit<
             exp: 0,
         },
         public readonly baseUnits: Partial<Record<keyof U, Fraction>>,
-    ) {}
+    ) {
+        Object.freeze(this);
+    }
 
     // From specific unit
     public exponentOf(baseUnit: keyof U): Fraction {
@@ -30,6 +32,15 @@ export class Unit<
 
     public get isUnitless(): boolean {
         return !Object.values(this.baseUnits).some((v) => v.valueOf() !== 0);
+    }
+
+    // Is this necessary when immutable?
+    public clone(): Unit<U, F, D> {
+        return new Unit(
+            this.unitSystem,
+            { ...this.factor },
+            { ...this.baseUnits },
+        );
     }
 
     public inverse(): Unit<U, F, D> {
@@ -48,12 +59,20 @@ export class Unit<
     }
 
     public isEqual(rhs: Unit<U, F, D>): boolean {
-        // TODO: factor equality
-        // ? Maybe do direct comparison without arithmetics
-        const result = this.multiply(rhs.inverse());
-        const factorEqual = result.factor.mul === 1 && result.factor.exp === 0;
+        // Check unit exponents
+        if (
+            Object.keys(this.unitSystem.baseUnits).some(
+                (u) => !this.exponentOf(u).equals(rhs.exponentOf(u)),
+            )
+        )
+            return false;
 
-        return factorEqual && result.isUnitless;
+        // Check factors
+        return (
+            this.factor.base === rhs.factor.base &&
+            this.factor.exp === rhs.factor.exp &&
+            this.factor.mul === rhs.factor.mul
+        );
     }
 
     public pow(num: Fraction): Unit<U, F, D> {
@@ -112,8 +131,6 @@ export class Unit<
                 };
             } else {
                 // TODO: hide the reminder in `mul`
-                console.log(lhsFactor);
-                console.log(rhsFactor);
                 throw new Error('Incompatible unit factors');
             }
         }

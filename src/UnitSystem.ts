@@ -13,15 +13,15 @@ export type BaseUnitsOf<S> = S extends UnitSystem<infer U, infer F, infer D>
     : never;
 
 export type FactorsOf<S> = S extends UnitSystem<infer U, infer F, infer D>
-    ? U
+    ? F
     : never;
 
 export type DerivedUnitsOf<S> = S extends UnitSystem<infer U, infer F, infer D>
-    ? U
+    ? D
     : never;
 
-const factorRegex = /^(\d+[\.,]?\d*)?[\s\*]*((\d+)\^(\d+))?[\s\*]*/g;
-const unitRegex = /\b([A-z]+)(:?\^([\(\)\/\d]+))/g;
+const factorRegex = /^(\d+[\.,]?\d*)?[\s\*]*((\d+)\^(\d+))?[\s\*]*/;
+const unitRegex = /\b([A-z]+)(:?\^([\(\)\/\d]+))/;
 const sortByKeyLength = <T>(obj: Record<string, T>) =>
     Object.fromEntries(
         Object.entries(obj).sort((a, b) => b[0].length - a[0].length),
@@ -71,12 +71,21 @@ export class UnitSystem<
             ) as keyof U;
 
             if (!unit) {
-                // FIXME:
-                throw new Error(`Unknown unit "${text}"`);
+                const factor = Object.entries(this.factors).find(
+                    ([f]) => f === text,
+                );
+
+                if (factor) {
+                    return this.createUnit({}, { ...factor[1] });
+                }
+
+                // TODO:
+                // FIXME: Add support for derived unit detection
                 // unit = Object.keys(this.derivedUnits).find((d) =>
                 //     text.endsWith(d),
                 // );
-                // TODO:
+
+                throw new Error(`Unknown unit "${text}"`);
             }
 
             if (!unit) throw unexpected(text);
@@ -91,7 +100,9 @@ export class UnitSystem<
 
             return new Unit(
                 this,
-                factor ? this.factors[factor] : { mul: 1, base: 10, exp: 0 },
+                factor
+                    ? { ...this.factors[factor] }
+                    : { mul: 1, base: 10, exp: 0 },
                 { [unit]: new Fraction(1) } as Partial<
                     Record<keyof U, Fraction>
                 >,
@@ -163,9 +174,6 @@ export class UnitSystem<
                     throw unexpected(text[j]);
                 } else {
                     unit = text.slice(i, j);
-                    console.log(
-                        `unit: ${unit}, text[j] = ${text[j]}, text = ${text}`,
-                    );
                     i = j;
                     break;
                 }
@@ -204,7 +212,6 @@ export class UnitSystem<
 
             if (denom) exp = exp.neg();
 
-            console.log(result);
             result = result.multiply(parseSingular(unit).pow(exp));
         }
 
