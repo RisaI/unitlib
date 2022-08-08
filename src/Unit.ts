@@ -137,6 +137,10 @@ export class Unit<
         return new Unit(this.unitSystem, normalizeFactor(factor), baseUnits);
     }
 
+    public divide(rhs: Unit<U, F, D>): Unit<U, F, D> {
+        return this.multiply(rhs.inverse());
+    }
+
     public withBestFactorFor(value: number): Unit<U, F, D> {
         let result:
             | { prevDist: Fraction; factor: Unit<U, F, D>['factor'] }
