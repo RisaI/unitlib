@@ -1,9 +1,15 @@
 import type { Unit } from './Unit';
 
-export type ValueWithUnit<Num, U extends Unit<{}, {}, {}>> = {
-    val: Num;
-    unit: U;
-};
+export declare type ValueWithUnit<Num, Un> = Un extends Unit<
+    infer U,
+    infer F,
+    infer D
+>
+    ? {
+          val: Num;
+          unit: Unit<U, F, D>;
+      }
+    : never;
 
 export type BaseUnitDefinition = {};
 
