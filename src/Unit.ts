@@ -7,6 +7,7 @@ import type {
     DerivedUnitDefinition,
     FactorDefinition,
 } from './types';
+import { normalizeFactor } from './utils';
 
 export class Unit<
     U extends Record<string, BaseUnitDefinition>,
@@ -100,6 +101,7 @@ export class Unit<
             ...this.baseUnits,
         };
 
+        // Known
         Object.entries(rhs.baseUnits).forEach(([unit, exp]) => {
             if (unit in baseUnits) {
                 (baseUnits as Record<keyof U, Fraction>)[unit as keyof U] =
@@ -109,33 +111,30 @@ export class Unit<
             }
         });
 
-        let factor = { mul: 1, base: 10, exp: 0 };
-        if (this.factor !== rhs.factor) {
-            // FIXME: ^^ object cmp
-            const lhsFactor = this.factor;
-            const rhsFactor = rhs.factor;
+        // Common factor
+        const lhsFactor = this.factor;
+        const rhsFactor = rhs.factor;
 
-            const mul = lhsFactor.mul * rhsFactor.mul;
+        let factor = { mul: lhsFactor.mul * rhsFactor.mul, base: 10, exp: 0 };
 
-            if (lhsFactor.base === rhsFactor.base) {
-                factor = {
-                    mul,
-                    base: lhsFactor.base,
-                    exp: lhsFactor.exp + rhsFactor.exp,
-                };
-            } else if (lhsFactor.exp === rhsFactor.exp) {
-                factor = {
-                    mul,
-                    base: lhsFactor.base * rhsFactor.base,
-                    exp: lhsFactor.exp,
-                };
-            } else {
-                // TODO: hide the reminder in `mul`
-                throw new Error('Incompatible unit factors');
-            }
+        if (lhsFactor.base === rhsFactor.base) {
+            factor.base = lhsFactor.base;
+            factor.exp = lhsFactor.exp + rhsFactor.exp;
+        } else {
+            const [major, minor] =
+                lhsFactor.base < rhsFactor.base
+                    ? [rhsFactor, lhsFactor]
+                    : [lhsFactor, rhsFactor];
+
+            factor.base = major.base;
+            factor.exp = major.exp;
+            // TODO: this will lead to numerical inaccuracy
+            // TODO: perhaps attempt to put most of the value into the exp first
+            // TODO: something like exp += Math.floor(minor.exp * Math.log(minor.base) / Math.log(major.base))
+            factor.mul *= Math.pow(minor.base, minor.exp);
         }
 
-        return new Unit(this.unitSystem, factor, baseUnits);
+        return new Unit(this.unitSystem, normalizeFactor(factor), baseUnits);
     }
 
     public withBestFactorFor(value: number): Unit<U, F, D> {
