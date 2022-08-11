@@ -1,8 +1,9 @@
 {
   "name": "unitlib",
-  "version": "0.0.2",
+  "version": "0.1.0",
   "description": "A unit library",
-  "main": "dist/index.js",
+  "main": "dist/",
+  "module": "dist/",
   "scripts": {
     "test": "jest",
     "build": "rollup --config rollup.config.ts --configPlugin typescript"
