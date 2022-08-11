@@ -2,7 +2,6 @@
   "name": "unitlib",
   "version": "0.1.0",
   "description": "A unit library",
-  "main": "dist/",
   "module": "dist/",
   "scripts": {
     "test": "jest",
@@ -36,5 +35,19 @@
   },
   "dependencies": {
     "fraction.js": "^4.2.0"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./definitions": {
+      "types": "./dist/definitions.d.ts",
+      "import": "./dist/definitions.js"
+    },
+    "./utils": {
+      "types": "./dist/utils.d.ts",
+      "import": "./dist/utils.js"
+    }
   }
 }
