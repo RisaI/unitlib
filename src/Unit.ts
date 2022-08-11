@@ -216,11 +216,14 @@ export class Unit<
 
             if (exp.valueOf() === 1) {
                 numerator += `${baseUnit} `;
+            } else if (exp.valueOf() === -1) {
+                denomCount += 1;
+                denominator += `${baseUnit} `;
             } else if (exp.valueOf() > 0) {
                 numerator += `${baseUnit}^${exp} `;
             } else if (exp.valueOf() < 0) {
                 denomCount += 1;
-                denominator += ` ${baseUnit}^${-exp}`;
+                denominator += `${baseUnit}^${-exp} `;
             }
         }
 
