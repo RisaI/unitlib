@@ -233,6 +233,10 @@ export class Unit<
         numerator = numerator.trim();
         denominator = denominator.trim();
 
+        if (denomCount > 0 && numerator.length === 0) {
+            numerator = '1';
+        }
+
         if (denomCount === 1) {
             numerator += `${s}/${s}${denominator}`;
         } else if (denomCount > 1) {

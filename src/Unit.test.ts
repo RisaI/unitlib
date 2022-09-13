@@ -133,6 +133,13 @@ describe('unit parsing', () => {
                 }),
             ],
             [
+                's^-2 m^-3',
+                unitSystem.createUnit({
+                    m: new Fr(-3),
+                    s: new Fr(-2),
+                }),
+            ],
+            [
                 'm^3 / (kg s^2)',
                 unitSystem.createUnit(
                     {
@@ -150,7 +157,18 @@ describe('unit parsing', () => {
 
         for (const [toParse, unit] of testVals) {
             const parsed = unitSystem.parseUnit(toParse);
-            expect(parsed.isEqual(unit)).toBeTruthy();
+            expect(parsed.isEqual(unit)).toBe(true);
         }
+    });
+});
+
+describe('unit printing', () => {
+    test('denom', () => {
+        expect(unitSystem.createUnit({ s: new Fr(-1) }).toString()).toEqual(
+            '1 / s',
+        );
+        expect(
+            unitSystem.createUnit({ s: new Fr(-1) }, 'k').toString(),
+        ).toEqual('k / s');
     });
 });

@@ -21,7 +21,7 @@ export type DerivedUnitsOf<S> = S extends UnitSystem<infer U, infer F, infer D>
     : never;
 
 const factorRegex = /^(\d+[\.,]?\d*)?[\s\*]*((\d+)\^(\d+))?[\s\*]*/;
-const unitRegex = /\b([A-z]+)(:?\^([\(\)\/\d]+))/;
+const unitRegex = /\b([A-z]+)(:?\^([\(\)\/-\d]+))/;
 const sortByKeyLength = <T>(obj: Record<string, T>) =>
     Object.fromEntries(
         Object.entries(obj).sort((a, b) => b[0].length - a[0].length),
@@ -202,7 +202,7 @@ export class UnitSystem<
                 } else {
                     // no bracket
                     for (let j = i + 1; j < text.length + 1; ++j) {
-                        if (text[j]?.match(/[\d]/)?.[0]) continue;
+                        if (text[j]?.match(/[-\d]/)?.[0]) continue;
                         exp = new Fraction(text.slice(i + 1, j));
                         i = j + 1;
                         break;
