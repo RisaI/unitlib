@@ -167,6 +167,7 @@ describe('unit printing', () => {
         expect(unitSystem.createUnit({ s: new Fr(-1) }).toString()).toEqual(
             '1 / s',
         );
+        expect(unitSystem.parseUnit('1 / s').toString()).toEqual('1 / s');
         expect(
             unitSystem.createUnit({ s: new Fr(-1) }, 'k').toString(),
         ).toEqual('k / s');

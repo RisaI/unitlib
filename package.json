@@ -1,6 +1,6 @@
 {
   "name": "unitlib",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "A unit library",
   "module": "dist/",
   "scripts": {
