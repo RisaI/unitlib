@@ -180,7 +180,30 @@ export class Unit<
         return Math.exp(Math.log(value / mul) - exp.valueOf() * Math.log(base));
     }
 
-    public toString(compact?: boolean): string {
+    public toString(
+        opts: Partial<{
+            compact: boolean;
+            fancyUnicode: boolean;
+        }> = {},
+    ): string {
+        function toUnicodeSuperscript(exponent: string) {
+            const code = (digit: string) => digit.charCodeAt(0);
+            let result = '';
+
+            for (const digit of exponent) {
+                const digitCode = code(digit);
+                if (digitCode >= code('0') && digitCode <= code('9')) {
+                    result += String.fromCharCode(
+                        code('⁰') + (digitCode - code('0')),
+                    );
+                } else if (digit === '/') {
+                    result += '⸍';
+                }
+            }
+
+            return result;
+        }
+
         let numerator = '';
         let denominator = '';
         let denomCount = 0;
@@ -219,20 +242,26 @@ export class Unit<
             } else if (exp.valueOf() === -1) {
                 denomCount += 1;
                 denominator += `${baseUnit} `;
-            } else if (exp.valueOf() > 0) {
-                numerator += `${baseUnit}^${exp} `;
-            } else if (exp.valueOf() < 0) {
-                denomCount += 1;
-                denominator += `${baseUnit}^${-exp} `;
+            } else {
+                const expString = opts?.fancyUnicode
+                    ? toUnicodeSuperscript(exp.abs().toFraction())
+                    : exp.abs().toFraction();
+                numerator += `${baseUnit}^${expString} `;
+
+                if (exp.valueOf() < 0) {
+                    denomCount += 1;
+                }
             }
         }
 
         // Combine numerator and denominator
-        const s = compact ? '' : ' ';
+        const s = opts.compact ? '' : ' ';
 
         numerator = numerator.trim();
         denominator = denominator.trim();
 
+        // If no multiplier and numerator unit but a nonzero
+        // ? Perhaps it's important even when denomCount === 0
         if (denomCount > 0 && numerator.length === 0) {
             numerator = '1';
         }

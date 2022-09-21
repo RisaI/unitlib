@@ -109,10 +109,11 @@ export class UnitSystem<
             );
         };
 
-        text = text.trim();
-        const factor: FactorDefinition = { mul: 1, base: 10, exp: 0 };
+        // Remove unnecessary symbols
+        text = text.trim().replace('  ', ' ');
 
         // Parse factor
+        const factor: FactorDefinition = { mul: 1, base: 10, exp: 0 };
         {
             const matches = factorRegex.exec(text);
             text = text.slice(matches[0].length);
@@ -127,19 +128,21 @@ export class UnitSystem<
             }
         }
 
+        // Initialize next unit
         let result = new Unit(this, factor, {});
         let denom = false;
 
         outer: for (let i = 0; i < text.length; ) {
             // Skip whitespace
             switch (text.charAt(i)) {
-                case '/':
+                case '/': // Toggle denominator mode
                     if (denom) throw unexpected('/');
                     denom = true;
-                case ' ':
+                case ' ': // Skip whitespaces
                     i += 1;
                     continue;
                 case '(': {
+                    // Parse
                     let openCounter = 0;
                     for (let j = i + 1; j < text.length; ++j) {
                         switch (text.charAt(j)) {
@@ -182,6 +185,7 @@ export class UnitSystem<
             let exp = new Fraction(1);
             if (text[i] === '^') {
                 if (text[i + 1] === '(') {
+                    // Read exponents in brackets
                     let openCounter = 0;
                     for (let j = i + 2; j < text.length + 1; ++j) {
                         switch (text.charAt(j)) {
@@ -200,7 +204,7 @@ export class UnitSystem<
                     }
                     throw new Error('Unmatched "("');
                 } else {
-                    // no bracket
+                    // no brackets
                     for (let j = i + 1; j < text.length + 1; ++j) {
                         if (text[j]?.match(/[-\d]/)?.[0]) continue;
                         exp = new Fraction(text.slice(i + 1, j));
