@@ -1,6 +1,6 @@
 {
   "include": ["src/**/*.ts"],
-  "exclude": ["dist"],
+  "exclude": ["dist", "src/**/*.test.ts","src/preview.ts"],
   "compilerOptions": {
     "moduleResolution": "node",
     "module": "ES6",

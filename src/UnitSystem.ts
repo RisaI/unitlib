@@ -187,7 +187,9 @@ export class UnitSystem<
                 if (text[i + 1] === '(') {
                     // Read exponents in brackets
                     let openCounter = 0;
-                    for (let j = i + 2; j < text.length + 1; ++j) {
+                    exp: for (let j = i + 2; j < text.length + 1; ++j) {
+                        if (j === text.length) throw new Error('Unmatched "("');
+
                         switch (text.charAt(j)) {
                             case '(':
                                 openCounter += 1;
@@ -197,16 +199,15 @@ export class UnitSystem<
                                 if (openCounter < 0) {
                                     exp = new Fraction(text.slice(i + 2, j));
                                     i = j + 1;
-                                    break;
+                                    break exp;
                                 }
                                 continue;
                         }
                     }
-                    throw new Error('Unmatched "("');
                 } else {
                     // no brackets
                     for (let j = i + 1; j < text.length + 1; ++j) {
-                        if (text[j]?.match(/[-\d]/)?.[0]) continue;
+                        if (text[j]?.match(/[-\d\/]/)?.[0]) continue;
                         exp = new Fraction(text.slice(i + 1, j));
                         i = j + 1;
                         break;

@@ -7,7 +7,7 @@ import type {
     DerivedUnitDefinition,
     FactorDefinition,
 } from './types';
-import { normalizeFactor } from './utils';
+import { normalizeFactor, toUnicodeSuperscript } from './utils';
 
 export class Unit<
     U extends Record<string, BaseUnitDefinition>,
@@ -184,29 +184,12 @@ export class Unit<
         opts: Partial<{
             compact: boolean;
             fancyUnicode: boolean;
+            noDenom: boolean;
         }> = {},
     ): string {
-        function toUnicodeSuperscript(exponent: string) {
-            const code = (digit: string) => digit.charCodeAt(0);
-            let result = '';
-
-            for (const digit of exponent) {
-                const digitCode = code(digit);
-                if (digitCode >= code('0') && digitCode <= code('9')) {
-                    result += String.fromCharCode(
-                        code('⁰') + (digitCode - code('0')),
-                    );
-                } else if (digit === '/') {
-                    result += '⸍';
-                }
-            }
-
-            return result;
-        }
-
-        let numerator = '';
-        let denominator = '';
-        let denomCount = 0;
+        let prefix = '';
+        let numerator: string[] = [];
+        let denominator: string[] = [];
 
         // Factor prefix formatting
         const factorAbbrev = this.unitSystem.knownFactor(this.factor);
@@ -215,63 +198,66 @@ export class Unit<
             const { mul, exp, base } = this.factor;
 
             if (mul !== 1) {
-                numerator += `${mul} * `;
+                prefix += `${mul} * `;
             }
 
             if (exp.valueOf() === 1) {
-                numerator = String(base);
+                prefix += String(base);
             } else if (exp.valueOf() !== 0) {
-                numerator = `${base}^${exp}`;
+                prefix += `${base}^${exp}`;
             } else if (mul !== 1) {
-                numerator = numerator.slice(0, -2); // remove '*'
+                prefix = prefix.slice(0, -2); // remove '*'
             }
         } else {
-            numerator += String(factorAbbrev);
+            prefix = String(factorAbbrev);
         }
 
         // Unit rows formatting
         for (const baseUnit in this.baseUnits) {
             const exp = this.baseUnits[baseUnit];
 
-            if (exp.valueOf() === 0) {
-                continue;
+            function expString(exp: Fraction): string {
+                return opts.fancyUnicode
+                    ? toUnicodeSuperscript(exp.toFraction())
+                    : '^' + exp.toFraction();
             }
 
-            if (exp.valueOf() === 1) {
-                numerator += `${baseUnit} `;
-            } else if (exp.valueOf() === -1) {
-                denomCount += 1;
-                denominator += `${baseUnit} `;
-            } else {
-                const expString = opts?.fancyUnicode
-                    ? toUnicodeSuperscript(exp.abs().toFraction())
-                    : exp.abs().toFraction();
-                numerator += `${baseUnit}^${expString} `;
+            switch (exp.valueOf()) {
+                case 0:
+                    continue;
+                case 1:
+                    numerator.push(baseUnit);
+                    continue;
+                case -1:
+                    if (!opts.noDenom) {
+                        denominator.push(baseUnit);
+                        continue;
+                    }
+            }
 
-                if (exp.valueOf() < 0) {
-                    denomCount += 1;
-                }
+            if (opts.noDenom) {
+                numerator.push(baseUnit + expString(exp));
+            } else {
+                (exp.valueOf() > 0 ? numerator : denominator).push(
+                    baseUnit + expString(exp.abs()),
+                );
             }
         }
 
         // Combine numerator and denominator
-        const s = opts.compact ? '' : ' ';
-
-        numerator = numerator.trim();
-        denominator = denominator.trim();
+        const div = opts.compact ? '/' : ' / ';
 
         // If no multiplier and numerator unit but a nonzero
-        // ? Perhaps it's important even when denomCount === 0
-        if (denomCount > 0 && numerator.length === 0) {
-            numerator = '1';
-        }
+        if (numerator.length === 0 && prefix.length === 0) numerator.push('1');
 
-        if (denomCount === 1) {
-            numerator += `${s}/${s}${denominator}`;
-        } else if (denomCount > 1) {
-            numerator += `${s}/${s}(${denominator})`;
+        let n = numerator.join(' ');
+        switch (denominator.length) {
+            case 0:
+                return `${prefix}${n}`;
+            case 1:
+                return `${prefix}${n}${div}${denominator[0]}`;
+            default:
+                return `${prefix}${n}${div}(${denominator.join(' ')})`;
         }
-
-        return numerator;
     }
 }

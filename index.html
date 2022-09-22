@@ -1,0 +1,17 @@
+<head>
+    <title>Unitlib preview</title>
+    <script type="module" src="src/preview.ts"></script>
+</head>
+<body>
+    <h1>Unitlib test page</h1>
+    <p>Use the <b>window.Unitlib</b> object</p>
+    <p><span id="mul"></span></p>
+
+    <script type="module">
+        const a = SI.parseUnit("m^2/3 s^2 / kg^2");
+        const b = SI.parseUnit("kg A^4")
+
+        document.getElementById('mul')
+            .innerHTML = `${a.toString()} * ${b.toString()} = ${a.multiply(b).toString({ fancyUnicode: true, noDenom: true })}`;
+    </script>
+</body>
