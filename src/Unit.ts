@@ -183,6 +183,7 @@ export class Unit<
     public toString(
         opts: Partial<{
             compact: boolean;
+            forceExponential: boolean;
             fancyUnicode: boolean;
             noDenom: boolean;
         }> = {},
@@ -194,7 +195,7 @@ export class Unit<
         // Factor prefix formatting
         const factorAbbrev = this.unitSystem.knownFactor(this.factor);
 
-        if (!factorAbbrev) {
+        if (!factorAbbrev || opts.forceExponential) {
             const { mul, exp, base } = this.factor;
 
             if (mul !== 1) {
