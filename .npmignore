@@ -1,6 +1,7 @@
 src/
 .prettierrc
 jest.config.ts
-rollup.config.ts
+vite.config.ts
 tsconfig.json
 yarn.lock
+index.html
