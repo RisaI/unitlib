@@ -142,6 +142,14 @@ export class Unit<
     }
 
     public withBestFactorFor(value: number): Unit<U, F, D> {
+        if (Number.isNaN(value) || !Number.isFinite(value)) return this;
+        if (value === 0)
+            return new Unit(
+                this.unitSystem,
+                { mul: 1, base: 10, exp: 0 },
+                { ...this.baseUnits },
+            );
+
         let result:
             | { prevDist: Fraction; factor: Unit<U, F, D>['factor'] }
             | undefined;
@@ -149,6 +157,7 @@ export class Unit<
         Object.values(this.unitSystem.factors).forEach(({ base, exp, mul }) => {
             const expInBase = new Fraction(
                 Math.floor(Math.log(Math.abs(value / mul)) / Math.log(base)),
+                1,
             );
             const dist = expInBase.sub(exp);
 
