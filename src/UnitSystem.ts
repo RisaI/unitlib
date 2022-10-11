@@ -1,6 +1,6 @@
 import Fraction from 'fraction.js';
 
-import { Unit } from './Unit';
+import { Unit, UnityFactor } from './Unit';
 
 import type {
     BaseUnitDefinition,
@@ -57,7 +57,7 @@ export class UnitSystem<
                 ? factor
                 : typeof factor === 'string'
                 ? { ...this.factors[factor] }
-                : { mul: 1, base: 10, exp: 0 };
+                : UnityFactor;
 
         return new Unit(this, f, baseUnit);
     }
@@ -100,9 +100,7 @@ export class UnitSystem<
 
             return new Unit(
                 this,
-                factor
-                    ? { ...this.factors[factor] }
-                    : { mul: 1, base: 10, exp: 0 },
+                factor ? { ...this.factors[factor] } : UnityFactor,
                 { [unit]: new Fraction(1) } as Partial<
                     Record<keyof U, Fraction>
                 >,
@@ -113,7 +111,7 @@ export class UnitSystem<
         text = text.trim().replace('  ', ' ');
 
         // Parse factor
-        const factor: FactorDefinition = { mul: 1, base: 10, exp: 0 };
+        const factor: FactorDefinition = { ...UnityFactor };
         {
             const matches = factorRegex.exec(text);
             text = text.slice(matches[0].length);

@@ -175,10 +175,10 @@ describe('unit printing', () => {
 });
 
 describe('factor inference', () => {
-    test('withBestFactor', () => {
+    test('factorless base', () => {
         const unit = unitSystem.createUnit(
             { s: new Fr(1) },
-            { base: 10, exp: 3, mul: 1 },
+            { base: 10, exp: 0, mul: 1 },
         );
 
         const test = [
@@ -188,6 +188,26 @@ describe('factor inference', () => {
             [2e-7, 'ns'],
             [12, 'das'],
             [7, 's'],
+        ] as const;
+
+        for (const [val, expected] of test) {
+            expect(unit.withBestFactorFor(val).toString()).toEqual(expected);
+        }
+    });
+
+    test('base with factor', () => {
+        const unit = unitSystem.createUnit(
+            { s: new Fr(1) },
+            { base: 10, exp: 3, mul: 1 },
+        );
+
+        const test = [
+            [10_000, 'Ms'],
+            [6_900_000, 'Gs'],
+            [0.5e-2, 's'],
+            [2e-7, 'us'],
+            [12, 'ks'],
+            [7, 'ks'],
         ] as const;
 
         for (const [val, expected] of test) {

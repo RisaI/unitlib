@@ -9,6 +9,9 @@ import type {
 } from './types';
 import { normalizeFactor, toUnicodeSuperscript } from './utils';
 
+export const UnityFactor: FactorDefinition = { mul: 1, base: 10, exp: 0 };
+Object.freeze(UnityFactor);
+
 export class Unit<
     U extends Record<string, BaseUnitDefinition>,
     F extends Record<string, FactorDefinition>,
@@ -16,11 +19,7 @@ export class Unit<
 > {
     constructor(
         public readonly unitSystem: UnitSystem<U, F, D>,
-        public readonly factor: FactorDefinition = {
-            mul: 1,
-            base: 10,
-            exp: 0,
-        },
+        public readonly factor: FactorDefinition = UnityFactor,
         public readonly baseUnits: Partial<Record<keyof U, Fraction>>,
     ) {
         Object.freeze(this);
@@ -115,7 +114,7 @@ export class Unit<
         const lhsFactor = this.factor;
         const rhsFactor = rhs.factor;
 
-        let factor = { mul: lhsFactor.mul * rhsFactor.mul, base: 10, exp: 0 };
+        let factor = { ...UnityFactor, mul: lhsFactor.mul * rhsFactor.mul };
 
         if (lhsFactor.base === rhsFactor.base) {
             factor.base = lhsFactor.base;
@@ -141,47 +140,54 @@ export class Unit<
         return this.multiply(rhs.inverse());
     }
 
+    public withFactor(
+        factor: Partial<FactorDefinition> = UnityFactor,
+    ): Unit<U, F, D> {
+        return new Unit(
+            this.unitSystem,
+            { ...this.factor, ...factor },
+            { ...this.baseUnits },
+        );
+    }
+
     public withBestFactorFor(value: number): Unit<U, F, D> {
         if (Number.isNaN(value) || !Number.isFinite(value)) return this;
         if (value === 0)
-            return new Unit(
-                this.unitSystem,
-                { mul: 1, base: 10, exp: 0 },
-                { ...this.baseUnits },
-            );
+            return new Unit(this.unitSystem, UnityFactor, {
+                ...this.baseUnits,
+            });
 
         let result:
             | { prevDist: Fraction; factor: Unit<U, F, D>['factor'] }
             | undefined;
 
-        [
-            ...Object.values(this.unitSystem.factors),
-            { mul: 1, base: 10, exp: 0 },
-        ].forEach(({ base, exp, mul }) => {
-            const expInBase = new Fraction(
-                Math.floor(Math.log(Math.abs(value / mul)) / Math.log(base)),
-                1,
-            );
-            const dist = expInBase.sub(exp);
+        [...Object.values(this.unitSystem.factors), UnityFactor].forEach(
+            ({ base, exp, mul }) => {
+                const expInBase = new Fraction(
+                    Math.floor(
+                        (Math.log(Math.abs(value) * (this.factor.mul / mul)) +
+                            this.factor.exp * Math.log(this.factor.base)) /
+                            Math.log(base),
+                    ),
+                    1,
+                );
+                const dist = expInBase.sub(exp);
 
-            if (
-                dist.valueOf() >= 0 &&
-                (!result || dist.valueOf() < result.prevDist.valueOf())
-            ) {
-                result = {
-                    prevDist: dist,
-                    factor: { base, exp, mul },
-                };
-            }
-        });
-
-        return new Unit(
-            this.unitSystem,
-            result?.factor ?? { mul: 1, base: 10, exp: 0 },
-            {
-                ...this.baseUnits,
+                if (
+                    dist.valueOf() >= 0 &&
+                    (!result || dist.valueOf() < result.prevDist.valueOf())
+                ) {
+                    result = {
+                        prevDist: dist,
+                        factor: { base, exp, mul },
+                    };
+                }
             },
         );
+
+        return new Unit(this.unitSystem, result?.factor ?? UnityFactor, {
+            ...this.baseUnits,
+        });
     }
 
     public applyFactor(value: number): number {
