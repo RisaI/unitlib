@@ -173,3 +173,25 @@ describe('unit printing', () => {
         ).toEqual('k / s');
     });
 });
+
+describe('factor inference', () => {
+    test('withBestFactor', () => {
+        const unit = unitSystem.createUnit(
+            { s: new Fr(1) },
+            { base: 10, exp: 3, mul: 1 },
+        );
+
+        const test = [
+            [10_000, 'ks'],
+            [6_900_000, 'Ms'],
+            [0.5e-2, 'ms'],
+            [2e-7, 'ns'],
+            [12, 'das'],
+            [7, 's'],
+        ] as const;
+
+        for (const [val, expected] of test) {
+            expect(unit.withBestFactorFor(val).toString()).toEqual(expected);
+        }
+    });
+});

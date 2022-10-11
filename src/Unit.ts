@@ -154,7 +154,10 @@ export class Unit<
             | { prevDist: Fraction; factor: Unit<U, F, D>['factor'] }
             | undefined;
 
-        Object.values(this.unitSystem.factors).forEach(({ base, exp, mul }) => {
+        [
+            ...Object.values(this.unitSystem.factors),
+            { mul: 1, base: 10, exp: 0 },
+        ].forEach(({ base, exp, mul }) => {
             const expInBase = new Fraction(
                 Math.floor(Math.log(Math.abs(value / mul)) / Math.log(base)),
                 1,
