@@ -1,8 +1,12 @@
+import { UnitSystem } from './UnitSystem';
 import type { BaseUnitDefinition, FactorDefinition } from './types';
 
 type TDict<Keys extends string, T> = Record<Keys, T>;
 type FactorDict<Keys extends string> = TDict<Keys, FactorDefinition>;
 type BUDict<Keys extends string> = TDict<Keys, BaseUnitDefinition>;
+
+//
+// SI
 
 const SIBaseUnits_ = {
     s: {},
@@ -14,18 +18,9 @@ const SIBaseUnits_ = {
     cd: {},
 };
 
-export const SIBaseUnits = SIBaseUnits_ as BUDict<keyof typeof SIBaseUnits_>;
-
-const CompsciBaseUnits_ = {
-    IO: {},
-    B: {},
-};
-
-export const CompsciBaseUnits = CompsciBaseUnits_ as BUDict<
-    keyof typeof CompsciBaseUnits_
+export const SIBaseUnits = Object.freeze(SIBaseUnits_) as BUDict<
+    keyof typeof SIBaseUnits_
 >;
-
-// Factor definitions
 
 const SIFactors_ = {
     da: { mul: 1, base: 10, exp: 1 },
@@ -51,9 +46,24 @@ const SIFactors_ = {
     y: { mul: 1, base: 10, exp: -24 },
 };
 
-export const SIFactors = SIFactors_ as FactorDict<keyof typeof SIFactors_>;
+export const SIFactors = Object.freeze(SIFactors_) as FactorDict<
+    keyof typeof SIFactors_
+>;
 
-const BinaryFactors_ = {
+export const SI = Object.freeze(new UnitSystem(SIBaseUnits, SIFactors, {}));
+
+//
+// IEC
+
+const IECBaseUnits_ = {
+    B: {},
+};
+
+export const IECBaseUnits = Object.freeze(IECBaseUnits_) as BUDict<
+    keyof typeof IECBaseUnits_
+>;
+
+const IECFactors_ = {
     Ki: { mul: 1, base: 2, exp: 10 },
     Mi: { mul: 1, base: 2, exp: 20 },
     Gi: { mul: 1, base: 2, exp: 30 },
@@ -64,6 +74,8 @@ const BinaryFactors_ = {
     Yi: { mul: 1, base: 2, exp: 80 },
 };
 
-export const BinaryFactors = BinaryFactors_ as FactorDict<
-    keyof typeof BinaryFactors_
+export const IECFactors = Object.freeze(IECFactors_) as FactorDict<
+    keyof typeof IECFactors_
 >;
+
+export const IEC = Object.freeze(new UnitSystem(IECBaseUnits, IECFactors, {}));

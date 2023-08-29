@@ -1,10 +1,10 @@
 import Fraction from 'fraction.js';
 import {
-    BinaryFactors,
-    CompsciBaseUnits,
+    IECFactors,
+    IECBaseUnits,
     SIBaseUnits,
     SIFactors,
-} from './definitions';
+} from './systems';
 import { Unit } from './Unit';
 import { UnitSystem } from './UnitSystem';
 
@@ -12,12 +12,12 @@ const fr = (a: number, b?: number) => new Fraction(a, b);
 
 const baseUnits = {
     ...SIBaseUnits,
-    ...CompsciBaseUnits,
+    ...IECBaseUnits,
 };
 
 const factors = {
     ...SIFactors,
-    ...BinaryFactors,
+    ...IECFactors,
 };
 
 type U = typeof baseUnits;
