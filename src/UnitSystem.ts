@@ -40,12 +40,12 @@ export class UnitSystem<
     }
 
     /**
-     * Given a factor definition, tries to find a corresponding label for it.
+     * Given a factor definition, tries to find a corresponding symbol for it.
      * @example
-     * SI.getFactorLabel({ mul: 1, base: 10, exp: 3 }) // "k"
-     * IEC.getFactorLabel({ mul: 1, base: 2, exp: 20 }) // "Mi"
+     * SI.getFactorSymbol({ mul: 1, base: 10, exp: 3 }) // "k"
+     * IEC.getFactorSymbol({ mul: 1, base: 2, exp: 20 }) // "Mi"
      */
-    public getFactorLabel(f: FactorDefinition): keyof F | undefined {
+    public getFactorSymbol(f: FactorDefinition): keyof F | undefined {
         return Object.entries(this.factors).find(
             ([, def]) =>
                 def.base === f.base && def.exp === f.exp && def.mul === f.mul,

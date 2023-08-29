@@ -212,7 +212,7 @@ export class Unit<
         let denominator: string[] = [];
 
         // Factor prefix formatting
-        const factorAbbrev = this.unitSystem.getFactorLabel(this.factor);
+        const factorAbbrev = this.unitSystem.getFactorSymbol(this.factor);
 
         if (!factorAbbrev || opts.forceExponential) {
             const { mul, exp, base } = this.factor;
