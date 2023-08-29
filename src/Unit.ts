@@ -31,16 +31,7 @@ export class Unit<
     }
 
     public get isUnitless(): boolean {
-        return !Object.values(this.baseUnits).some((v) => v.valueOf() !== 0);
-    }
-
-    // Is this necessary when immutable?
-    public clone(): Unit<U, F, D> {
-        return new Unit(
-            this.unitSystem,
-            { ...this.factor },
-            { ...this.baseUnits },
-        );
+        return !Object.values(this.baseUnits).some((v) => v?.valueOf() !== 0);
     }
 
     public inverse(): Unit<U, F, D> {
@@ -53,7 +44,7 @@ export class Unit<
             this.unitSystem,
             factor,
             Object.fromEntries(
-                Object.entries(this.baseUnits).map(([a, b]) => [a, b.neg()]),
+                Object.entries(this.baseUnits).map(([k, v]) => [k, v?.neg()]),
             ) as Record<keyof U, Fraction>,
         );
     }
@@ -90,7 +81,10 @@ export class Unit<
             this.unitSystem,
             factor,
             Object.fromEntries(
-                Object.entries(this.baseUnits).map(([k, v]) => [k, v.mul(num)]),
+                Object.entries(this.baseUnits).map(([k, v]) => [
+                    k,
+                    v?.mul(num),
+                ]),
             ) as Partial<Record<keyof U, Fraction>>,
         );
     }
@@ -102,9 +96,8 @@ export class Unit<
 
         // Known
         Object.entries(rhs.baseUnits).forEach(([unit, exp]) => {
-            if (unit in baseUnits) {
-                (baseUnits as Record<keyof U, Fraction>)[unit as keyof U] =
-                    baseUnits[unit].add(exp);
+            if (unit in baseUnits && exp !== undefined) {
+                baseUnits[unit as keyof U] = baseUnits[unit]?.add(exp);
             } else {
                 baseUnits[unit as keyof U] = exp;
             }
@@ -190,6 +183,14 @@ export class Unit<
         });
     }
 
+    /**
+     * Takes a dimensionless value and multiplies it this unit's factor. It is essentially
+     * equivalent with multiplying the value by this unit, and then dividing by the base unit.
+     * @example
+     * const unit = IEC.parseUnit('kiB');
+     * unit.applyFactor(12) // 12288
+     * // because 12 kiB = 12 288 B
+     */
     public applyFactor(value: number): number {
         const { mul, base, exp } = this.factor;
 
@@ -211,7 +212,7 @@ export class Unit<
         let denominator: string[] = [];
 
         // Factor prefix formatting
-        const factorAbbrev = this.unitSystem.knownFactor(this.factor);
+        const factorAbbrev = this.unitSystem.getFactorLabel(this.factor);
 
         if (!factorAbbrev || opts.forceExponential) {
             const { mul, exp, base } = this.factor;
@@ -234,6 +235,7 @@ export class Unit<
         // Unit rows formatting
         for (const baseUnit in this.baseUnits) {
             const exp = this.baseUnits[baseUnit];
+            if (exp === undefined) continue;
 
             function expString(exp: Fraction): string {
                 return opts.fancyUnicode

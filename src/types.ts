@@ -1,18 +1,9 @@
-import type { Unit } from './Unit';
+export interface BaseUnitDefinition {}
 
-export declare type ValueWithUnit<Num, Un> = Un extends Unit<
-    infer U,
-    infer F,
-    infer D
->
-    ? {
-          val: Num;
-          unit: Unit<U, F, D>;
-      }
-    : never;
+export interface FactorDefinition {
+    mul: number;
+    base: number;
+    exp: number;
+}
 
-export type BaseUnitDefinition = {};
-
-export type FactorDefinition = { mul: number; base: number; exp: number };
-
-export type DerivedUnitDefinition = {};
+export interface DerivedUnitDefinition {}

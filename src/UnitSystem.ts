@@ -20,8 +20,6 @@ export type DerivedUnitsOf<S> = S extends UnitSystem<infer U, infer F, infer D>
     ? D
     : never;
 
-const factorRegex = /^(\d+[\.,]?\d*)?[\s\*]*((\d+)\^(\d+))?[\s\*]*/;
-const unitRegex = /\b([A-z]+)(:?\^([\(\)\/-\d]+))/;
 const sortByKeyLength = <T>(obj: Record<string, T>) =>
     Object.fromEntries(
         Object.entries(obj).sort((a, b) => b[0].length - a[0].length),
@@ -41,7 +39,13 @@ export class UnitSystem<
         this.derivedUnits = sortByKeyLength(derivedUnits) as D;
     }
 
-    public knownFactor(f: FactorDefinition): keyof F | undefined {
+    /**
+     * Given a factor definition, tries to find a corresponding label for it.
+     * @example
+     * SI.getFactorLabel({ mul: 1, base: 10, exp: 3 }) // "k"
+     * IEC.getFactorLabel({ mul: 1, base: 2, exp: 20 }) // "Mi"
+     */
+    public getFactorLabel(f: FactorDefinition): keyof F | undefined {
         return Object.entries(this.factors).find(
             ([, def]) =>
                 def.base === f.base && def.exp === f.exp && def.mul === f.mul,
@@ -113,17 +117,16 @@ export class UnitSystem<
         // Parse factor
         const factor: FactorDefinition = { ...UnityFactor };
         {
-            const matches = factorRegex.exec(text);
-            text = text.slice(matches[0].length);
+            const factorRegex =
+                /^(?<mul>\d+[\.,]?\d*)?\s*\*?\s*((?<base>\d+)\^(?<exp>\d+))?\s*\*?\s*/;
+            const match = text.match(factorRegex);
+            text = text.slice(match?.[0].length ?? 0);
 
-            if (matches[1]) {
-                factor.mul = Number.parseFloat(matches[1]);
-            }
+            const { mul, base, exp } = match?.groups ?? {};
 
-            if (matches[2]) {
-                factor.base = Number.parseInt(matches[3]);
-                factor.exp = Number.parseInt(matches[4]);
-            }
+            if (mul) factor.mul = Number.parseFloat(mul);
+            if (base) factor.base = Number.parseInt(base);
+            if (exp) factor.exp = Number.parseInt(exp);
         }
 
         // Initialize next unit
@@ -167,7 +170,7 @@ export class UnitSystem<
                 }
             }
 
-            let unit;
+            let unit = '';
             for (let j = i; j <= text.length; ++j) {
                 if (text[j]?.match(/[A-Za-z]/)?.[0]) continue;
 
