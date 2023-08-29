@@ -55,15 +55,15 @@ export class Unit<
             Object.keys(this.unitSystem.baseUnits).some(
                 (u) => !this.exponentOf(u).equals(rhs.exponentOf(u)),
             )
-        )
+        ) {
             return false;
+        }
 
         // Check factors
-        return (
-            this.factor.base === rhs.factor.base &&
-            this.factor.exp === rhs.factor.exp &&
-            this.factor.mul === rhs.factor.mul
-        );
+        if (this.factor.mul !== rhs.factor.mul) return false;
+        if (this.factor.exp !== rhs.factor.exp) return false;
+        if (this.factor.exp === 0) return true;
+        return this.factor.base === rhs.factor.base;
     }
 
     public pow(num: Fraction): Unit<U, F, D> {
@@ -204,7 +204,7 @@ export class Unit<
             compact: boolean;
             forceExponential: boolean;
             fancyUnicode: boolean;
-            noDenom: boolean;
+            useNegativeExponents: boolean;
         }> = {},
     ): string {
         let prefix = '';
@@ -222,9 +222,9 @@ export class Unit<
             }
 
             if (exp.valueOf() === 1) {
-                prefix += String(base);
+                prefix += `${String(base)} `;
             } else if (exp.valueOf() !== 0) {
-                prefix += `${base}^${exp}`;
+                prefix += `${base}^${exp} `;
             } else if (mul !== 1) {
                 prefix = prefix.slice(0, -2); // remove '*'
             }
@@ -250,13 +250,13 @@ export class Unit<
                     numerator.push(baseUnit);
                     continue;
                 case -1:
-                    if (!opts.noDenom) {
+                    if (!opts.useNegativeExponents) {
                         denominator.push(baseUnit);
                         continue;
                     }
             }
 
-            if (opts.noDenom) {
+            if (opts.useNegativeExponents) {
                 numerator.push(baseUnit + expString(exp));
             } else {
                 (exp.valueOf() > 0 ? numerator : denominator).push(
