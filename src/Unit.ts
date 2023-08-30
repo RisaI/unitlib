@@ -19,7 +19,7 @@ export class Unit<
 > {
     constructor(
         public readonly unitSystem: UnitSystem<U, F, D>,
-        public readonly factor: FactorDefinition = UnityFactor,
+        public readonly factor: FactorDefinition,
         public readonly baseUnits: Partial<Record<keyof U, Fraction>>,
     ) {
         Object.freeze(this);
@@ -31,7 +31,9 @@ export class Unit<
     }
 
     public get isUnitless(): boolean {
-        return !Object.values(this.baseUnits).some((v) => v?.valueOf() !== 0);
+        return !Object.values(this.baseUnits).some(
+            (v) => v !== undefined && v.valueOf() !== 0,
+        );
     }
 
     public inverse(): Unit<U, F, D> {
@@ -133,9 +135,7 @@ export class Unit<
         return this.multiply(rhs.inverse());
     }
 
-    public withFactor(
-        factor: Partial<FactorDefinition> = UnityFactor,
-    ): Unit<U, F, D> {
+    public withFactor(factor: Partial<FactorDefinition>): Unit<U, F, D> {
         return new Unit(
             this.unitSystem,
             { ...this.factor, ...factor },
@@ -184,19 +184,39 @@ export class Unit<
     }
 
     /**
-     * Takes a dimensionless value and multiplies it this unit's factor. It is essentially
-     * equivalent with multiplying the value by this unit, and then dividing by the base unit.
+     * Takes a dimensionless value and multiplies it by this unit's factor.
+     * Assuming the value is expressed in this unit, the method converts it
+     * to the base unit.
      * @example
-     * const unit = IEC.parseUnit('kiB');
-     * unit.applyFactor(12) // 12288
-     * // because 12 kiB = 12 288 B
+     * const unit = SI.parseUnit('km');
+     * unit.multiplyValueByFactor(2) // 2_000
+     * // because 2 km = 2 000 m
      */
-    public applyFactor(value: number): number {
+    public multiplyValueByFactor(value: number): number {
         const { mul, base, exp } = this.factor;
-
         if (exp.valueOf() === 0 && mul === 1) return value;
 
-        return Math.exp(Math.log(value / mul) - exp.valueOf() * Math.log(base));
+        // !TODO compare precision
+        return value * mul * base ** exp;
+        // return Math.exp(Math.log(mul * value) + exp * Math.log(base));
+    }
+
+    /**
+     * Takes a dimensionless value and divides it by this unit's factor.
+     * Assuming the value is expressed in the base unit, the method converts
+     * it to this unit.
+     * @example
+     * const unit = SI.parseUnit('km');
+     * unit.divideValueByFactor(2_000) // 2
+     * // because 2 000 m = 2 km
+     */
+    public divideValueByFactor(value: number): number {
+        const { mul, base, exp } = this.factor;
+        if (exp.valueOf() === 0 && mul === 1) return value;
+
+        // !TODO compare precision
+        return value / (mul * base ** exp);
+        // return Math.exp(Math.log(value / mul) - exp * Math.log(base));
     }
 
     public toString(

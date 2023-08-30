@@ -1,10 +1,5 @@
 import Fraction from 'fraction.js';
-import {
-    IECFactors,
-    IECBaseUnits,
-    SIBaseUnits,
-    SIFactors,
-} from './systems';
+import { IECFactors, IECBaseUnits, SIBaseUnits, SIFactors } from './systems';
 import { Unit } from './Unit';
 import { UnitSystem } from './UnitSystem';
 
@@ -53,6 +48,7 @@ describe('unit ops', () => {
     test('isUnitless', () => {
         expect(unit({}).isUnitless).toBe(true);
         expect(unit({ m: fr(1) }).isUnitless).toBe(false);
+        expect(unit({ s: fr(0), A: undefined }).isUnitless).toBe(true);
     });
 
     test('isEqual', () => {
@@ -89,6 +85,8 @@ describe('unit ops', () => {
             mol: fr(2),
             s: fr(-4),
             g: fr(1),
+            A: fr(0),
+            cd: undefined,
         });
         const v = unit({
             mol: fr(-2),
@@ -104,6 +102,8 @@ describe('unit ops', () => {
             mol: fr(2),
             s: fr(-4),
             g: fr(1),
+            K: undefined,
+            B: fr(0),
         });
         const v = unit({
             mol: fr(-3, 2),
@@ -123,8 +123,8 @@ describe('unit ops', () => {
 
     test('multiply base', () => {
         const one = unit({});
-        const m = unit({ m: fr(1) });
-        const m2 = unit({ m: fr(2) });
+        const m = unit({ m: fr(1), A: undefined });
+        const m2 = unit({ m: fr(2), K: fr(0) });
         const s = unit({ s: fr(1) });
         const m2s = unit({ m: fr(2), s: fr(1) });
         const mps = unit({ m: fr(1), s: fr(-1) });
@@ -135,6 +135,17 @@ describe('unit ops', () => {
         expect(m.multiply(s).multiply(m).isEqual(m2s)).toBe(true);
         expect(s.multiply(m2).isEqual(m2s)).toBe(true);
         expect(m.divide(s).isEqual(mps)).toBe(true);
+    });
+
+    test('multiply different bases', () => {
+        const ks = unit({ s: fr(1) }, 'k');
+        const MiB = unit({ B: fr(1) }, 'Mi');
+
+        const kbps = MiB.divide(ks);
+        expect(kbps.multiplyValueByFactor(1)).toBeCloseTo(1048.576);
+
+        const kbps2 = ks.inverse().multiply(MiB);
+        expect(kbps2.multiplyValueByFactor(1)).toBeCloseTo(1048.576);
     });
 
     test('multipy realworld', () => {
@@ -157,7 +168,7 @@ describe('unit ops', () => {
 
         expect(value).toBeCloseTo(1 / (4 * 3.14 * 3e8 ** 2));
 
-        expect(epsilon0.applyFactor(value)).toBeCloseTo(1);
+        expect(epsilon0.divideValueByFactor(value)).toBeCloseTo(1);
     });
 
     test('withFactor', () => {
@@ -237,11 +248,22 @@ describe('unit printing', () => {
         expect(unit({ s: fr(-1), A: fr(0) }).toString()).toBe('1 / s');
         expect(unitSystem.parseUnit('1 / s').toString()).toBe('1 / s');
         expect(unit({ s: fr(-1) }, 'k').toString()).toBe('k / s');
+        expect(unit({ m: fr(1, 2), K: fr(-1) }).toString()).toBe('m^1/2 / K');
+
+        expect(unit({ s: fr(-1), A: fr(0) }).toString({ compact: true })).toBe(
+            '1/s',
+        );
+        expect(unit({ s: fr(-1) }, 'k').toString({ compact: true })).toBe(
+            'k/s',
+        );
     });
 
     test('with factor', () => {
         expect(
-            unit({ A: fr(1) }, { mul: 24, base: 10, exp: 0 }).toString(),
+            unit(
+                { A: fr(1), B: undefined },
+                { mul: 24, base: 10, exp: 0 },
+            ).toString(),
         ).toBe('24 A');
 
         expect(
