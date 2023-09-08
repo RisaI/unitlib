@@ -8,9 +8,17 @@ import type {
     FactorDefinition,
 } from './types';
 import { normalizeFactor, toUnicodeSuperscript } from './utils';
+import { ApproximateEqualityThreshold, areApproximatelyEqual } from './float';
 
 export const UnityFactor: FactorDefinition = { mul: 1, base: 10, exp: 0 };
 Object.freeze(UnityFactor);
+
+export interface FormatOptions {
+    compact?: boolean;
+    forceExponential?: boolean;
+    fancyUnicode?: boolean;
+    useNegativeExponents?: boolean;
+}
 
 export class Unit<
     U extends Record<string, BaseUnitDefinition>,
@@ -68,6 +76,27 @@ export class Unit<
         return this.factor.base === rhs.factor.base;
     }
 
+    public isApproxEqual(
+        rhs: Unit<U, F, D>,
+        thresholds: ApproximateEqualityThreshold = {},
+    ): boolean {
+        // Check unit exponents
+        if (
+            Object.keys(this.unitSystem.baseUnits).some(
+                (u) => !this.exponentOf(u).equals(rhs.exponentOf(u)),
+            )
+        ) {
+            return false;
+        }
+
+        // Check factors
+        return areApproximatelyEqual(
+            this.factor.mul * this.factor.base ** this.factor.exp,
+            rhs.factor.mul * rhs.factor.base ** rhs.factor.exp,
+            thresholds,
+        );
+    }
+
     public pow(num: Fraction): Unit<U, F, D> {
         const factor = { ...this.factor };
 
@@ -91,7 +120,13 @@ export class Unit<
         );
     }
 
-    public multiply(rhs: Unit<U, F, D>): Unit<U, F, D> {
+    public multiply(rhs: Unit<U, F, D> | number): Unit<U, F, D> {
+        if (typeof rhs === 'number') {
+            return this.withFactor({
+                mul: rhs * this.factor.mul,
+            });
+        }
+
         const baseUnits: Partial<Record<keyof U, Fraction>> = {
             ...this.baseUnits,
         };
@@ -219,14 +254,7 @@ export class Unit<
         // return Math.exp(Math.log(value / mul) - exp * Math.log(base));
     }
 
-    public toString(
-        opts: Partial<{
-            compact: boolean;
-            forceExponential: boolean;
-            fancyUnicode: boolean;
-            useNegativeExponents: boolean;
-        }> = {},
-    ): string {
+    public toString(opts: FormatOptions = {}): string {
         let prefix = '';
         let numerator: string[] = [];
         let denominator: string[] = [];

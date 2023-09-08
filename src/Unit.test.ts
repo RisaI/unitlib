@@ -148,6 +148,18 @@ describe('unit ops', () => {
         expect(kbps2.multiplyValueByFactor(1)).toBeCloseTo(1048.576);
     });
 
+    test('multiply by scalar', () => {
+        const meter = unit({ m: fr(1) });
+
+        const twoMeters = meter.multiply(2);
+        expect(twoMeters.factor.mul).toBe(2);
+        expect(twoMeters.toString()).toBe('2 m');
+
+        const sixMeters = twoMeters.multiply(3);
+        expect(sixMeters.factor.mul).toBe(6);
+        expect(sixMeters.toString()).toBe('6 m');
+    });
+
     test('multipy realworld', () => {
         const c = unit({ m: fr(1), s: fr(-1) }, { mul: 3, base: 10, exp: 8 });
         const mu0 = unit(

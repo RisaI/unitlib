@@ -4,7 +4,7 @@
   "compilerOptions": {
     "moduleResolution": "node",
     "module": "ES6",
-    "target": "ES2019",
+    "target": "ES2020",
     "noImplicitAny": true,
     "strict": true,
     "preserveConstEnums": true,
