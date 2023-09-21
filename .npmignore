@@ -1,4 +1,5 @@
 src/
+coverage/
 .prettierrc
 jest.config.ts
 vite.config.ts
