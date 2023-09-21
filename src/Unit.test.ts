@@ -3,6 +3,9 @@ import { IECFactors, IECBaseUnits, SIBaseUnits, SIFactors } from './systems';
 import { Unit } from './Unit';
 import { UnitSystem } from './UnitSystem';
 
+// @ts-ignore
+import { log } from "console";
+
 const fr = (a: number, b?: number) => new Fraction(a, b);
 
 const baseUnits = {
@@ -256,6 +259,12 @@ describe('unit parsing', () => {
 });
 
 describe('unit printing', () => {
+    test('with different bases', () => {
+        expect(unitSystem.parseUnit('us').toString()).toBe('us');
+        expect(unitSystem.parseUnit('km').toString()).toBe('km');
+        expect(unitSystem.parseUnit('KiB').toString()).toBe('KiB');
+    })
+
     test('with denominator', () => {
         expect(unit({ s: fr(-1), A: fr(0) }).toString()).toBe('1 / s');
         expect(unitSystem.parseUnit('1 / s').toString()).toBe('1 / s');

@@ -141,10 +141,13 @@ export class Unit<
         });
 
         // Common factor
-        const lhsFactor = this.factor;
-        const rhsFactor = rhs.factor;
+        let lhsFactor = this.factor;
+        let rhsFactor = rhs.factor;
 
         let factor = { ...UnityFactor, mul: lhsFactor.mul * rhsFactor.mul };
+
+        if (rhsFactor.exp === 0) rhsFactor = { ...rhsFactor, base: lhsFactor.base };
+        else if (lhsFactor.exp === 0) lhsFactor = { ...lhsFactor, base: rhsFactor.base };
 
         if (lhsFactor.base === rhsFactor.base) {
             factor.base = lhsFactor.base;
