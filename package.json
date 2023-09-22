@@ -27,14 +27,6 @@
         "./systems": {
             "types": "./dist/systems.d.ts",
             "import": "./dist/systems.mjs"
-        },
-        "./Quantity": {
-            "types": "./dist/Quantity.d.ts",
-            "import": "./dist/Quantity.mjs"
-        },
-        "./Unit": {
-            "types": "./dist/Unit.d.ts",
-            "import": "./dist/Unit.mjs"
         }
     },
     "scripts": {

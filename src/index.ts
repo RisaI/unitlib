@@ -1,10 +1,7 @@
 /// <reference path="./types.ts" />
 
-export { Unit } from './Unit';
-export { UnitSystem } from './UnitSystem';
+export * from './Unit';
+export * from './UnitSystem';
+export * from './Quantity'
 
-export type {
-    BaseUnitDefinition,
-    FactorDefinition,
-    DerivedUnitDefinition,
-} from './types';
+export type * from './types';
