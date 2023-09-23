@@ -186,6 +186,12 @@ describe('unit ops', () => {
         expect(epsilon0.divideValueByFactor(value)).toBeCloseTo(1);
     });
 
+    test('multiply edge cases', () => {
+        const a = unit({ }, { mul: 1, base: 1, exp: 1 });
+        expect(a.multiply(a).multiplyValueByFactor(1)).toBe(1);
+        expect(a.divide(a).multiplyValueByFactor(1)).toBe(1);
+    })
+
     test('withFactor', () => {
         const kilo = unit({}, { mul: 1, base: 10, exp: 3 });
         const m = unit({ m: fr(1) });

@@ -3,6 +3,12 @@ import { FactorDefinition } from './types';
 export const normalizeFactor = (
     factor: Readonly<FactorDefinition>,
 ): FactorDefinition => {
+    if (factor.base === 1) return {
+        mul: factor.mul,
+        base: 1,
+        exp: 0,
+    };
+
     const sign = Math.sign(factor.mul);
     const logInBase = Math.log(factor.mul * sign) / Math.log(factor.base);
     const order = Math.floor(logInBase);
