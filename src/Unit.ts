@@ -146,8 +146,11 @@ export class Unit<
 
         let factor = { ...UnityFactor, mul: lhsFactor.mul * rhsFactor.mul };
 
-        if (rhsFactor.exp === 0) rhsFactor = { ...rhsFactor, base: lhsFactor.base };
-        else if (lhsFactor.exp === 0) lhsFactor = { ...lhsFactor, base: rhsFactor.base };
+        if (rhsFactor.exp === 0) {
+            rhsFactor = { ...rhsFactor, base: lhsFactor.base };
+        } else if (lhsFactor.exp === 0) {
+            lhsFactor = { ...lhsFactor, base: rhsFactor.base };
+        }
 
         if (lhsFactor.base === rhsFactor.base) {
             factor.base = lhsFactor.base;
@@ -262,8 +265,26 @@ export class Unit<
         let numerator: string[] = [];
         let denominator: string[] = [];
 
+        // Edge case: if there are no units with a positive exponent, take
+        // steps to avoid 1000s⁻¹ turning into k/s or ks⁻¹
+
+        const isInverseUnit = Object.values(this.baseUnits).every(
+            (exp) => !exp || exp.compare(0) <= 0,
+        );
+        const inv = isInverseUnit ? this.inverse() : undefined;
+
+        const inverseFactorAbbrev = inv
+            ? this.unitSystem.getFactorSymbol(inv.factor)
+            : undefined;
+
+        if (inv && inverseFactorAbbrev && !opts.useNegativeExponents) {
+            return (opts.compact ? '1/' : '1 / ') + inv.toString(opts);
+        }
+
+        const normalFactorAbbrev = this.unitSystem.getFactorSymbol(this.factor);
+
         // Factor prefix formatting
-        const factorAbbrev = this.unitSystem.getFactorSymbol(this.factor);
+        const factorAbbrev = inv ? inverseFactorAbbrev : normalFactorAbbrev;
 
         if (!factorAbbrev || opts.forceExponential) {
             const { mul, exp, base } = this.factor;
@@ -322,14 +343,18 @@ export class Unit<
         // If no multiplier and numerator unit but a nonzero
         if (numerator.length === 0 && prefix.length === 0) numerator.push('1');
 
+        const dedupeSpaces = (s: string) => s.replace(/\s\s+/g, ' ');
+
         let n = numerator.join(' ');
         switch (denominator.length) {
             case 0:
                 return `${prefix}${n}`;
             case 1:
-                return `${prefix}${n}${div}${denominator[0]}`;
+                return dedupeSpaces(`${prefix}${n}${div}${denominator[0]}`);
             default:
-                return `${prefix}${n}${div}(${denominator.join(' ')})`;
+                return dedupeSpaces(
+                    `${prefix}${n}${div}(${denominator.join(' ')})`,
+                );
         }
     }
 }

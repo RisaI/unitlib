@@ -4,7 +4,7 @@ import { Unit } from './Unit';
 import { UnitSystem } from './UnitSystem';
 
 // @ts-ignore
-import { log } from "console";
+import { log } from 'console';
 
 const fr = (a: number, b?: number) => new Fraction(a, b);
 
@@ -187,10 +187,10 @@ describe('unit ops', () => {
     });
 
     test('multiply edge cases', () => {
-        const a = unit({ }, { mul: 1, base: 1, exp: 1 });
+        const a = unit({}, { mul: 1, base: 1, exp: 1 });
         expect(a.multiply(a).multiplyValueByFactor(1)).toBe(1);
         expect(a.divide(a).multiplyValueByFactor(1)).toBe(1);
-    })
+    });
 
     test('withFactor', () => {
         const kilo = unit({}, { mul: 1, base: 10, exp: 3 });
@@ -266,22 +266,20 @@ describe('unit parsing', () => {
 
 describe('unit printing', () => {
     test('with different bases', () => {
+        expect(unitSystem.parseUnit('s').toString()).toBe('s');
         expect(unitSystem.parseUnit('us').toString()).toBe('us');
         expect(unitSystem.parseUnit('km').toString()).toBe('km');
         expect(unitSystem.parseUnit('KiB').toString()).toBe('KiB');
-    })
+    });
 
     test('with denominator', () => {
         expect(unit({ s: fr(-1), A: fr(0) }).toString()).toBe('1 / s');
         expect(unitSystem.parseUnit('1 / s').toString()).toBe('1 / s');
-        expect(unit({ s: fr(-1) }, 'k').toString()).toBe('k / s');
+        expect(unit({ s: fr(-1) }, 'k').toString()).toBe('1 / ms');
         expect(unit({ m: fr(1, 2), K: fr(-1) }).toString()).toBe('m^1/2 / K');
 
         expect(unit({ s: fr(-1), A: fr(0) }).toString({ compact: true })).toBe(
             '1/s',
-        );
-        expect(unit({ s: fr(-1) }, 'k').toString({ compact: true })).toBe(
-            'k/s',
         );
     });
 
@@ -304,6 +302,23 @@ describe('unit printing', () => {
         expect(
             unit({ A: fr(1) }, { mul: 1, base: 10, exp: 6 }).toString(),
         ).toBe('MA');
+    });
+
+    test('inverse units with factor', () => {
+        expect(unit({ s: fr(-1) }, 'k').toString()).toBe('1 / ms');
+
+        expect(unit({ s: fr(-1) }, 'k').toString({ compact: true })).toBe(
+            '1/ms',
+        );
+
+        expect(
+            unit({ s: fr(-1) }, 'k').toString({
+                fancyUnicode: true,
+                useNegativeExponents: true,
+            }),
+        ).toBe('ms⁻¹');
+
+        expect(unit({ B: fr(-1) }, 'Ki').toString()).toBe('2^10 / B');
     });
 
     test('pretty unicode', () => {
