@@ -1,14 +1,14 @@
 import Fraction from 'fraction.js';
 
-import { UnitSystem } from './UnitSystem';
+import { UnitSystem } from './UnitSystem.ts';
 
 import type {
     BaseUnitDefinition,
     DerivedUnitDefinition,
     FactorDefinition,
-} from './types';
-import { normalizeFactor, toUnicodeSuperscript } from './utils';
-import { ApproximateEqualityThreshold, areApproximatelyEqual } from './float';
+} from './types.ts';
+import { normalizeFactor, toUnicodeSuperscript } from './utils.ts';
+import { ApproximateEqualityThreshold, areApproximatelyEqual } from './float.ts';
 
 export const UnityFactor: FactorDefinition = { mul: 1, base: 10, exp: 0 };
 Object.freeze(UnityFactor);

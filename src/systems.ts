@@ -1,5 +1,5 @@
-import { UnitSystem } from './UnitSystem';
-import type { BaseUnitDefinition, FactorDefinition } from './types';
+import { UnitSystem } from './UnitSystem.ts';
+import type { BaseUnitDefinition, FactorDefinition } from './types.ts';
 
 type TDict<Keys extends string, T> = Record<Keys, T>;
 type FactorDict<Keys extends string> = TDict<Keys, FactorDefinition>;

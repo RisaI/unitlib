@@ -1,4 +1,4 @@
-import { FactorDefinition } from './types';
+import { FactorDefinition } from './types.ts';
 
 export const normalizeFactor = (
     factor: Readonly<FactorDefinition>,

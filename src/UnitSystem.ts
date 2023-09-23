@@ -1,6 +1,6 @@
 import Fraction from 'fraction.js';
 
-import { Unit, UnityFactor } from './Unit';
+import { Unit, UnityFactor } from './Unit.ts';
 
 import type {
     BaseUnitDefinition,

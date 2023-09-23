@@ -1,11 +1,11 @@
 import type Fraction from 'fraction.js';
-import type { FormatOptions, Unit } from './Unit';
+import type { FormatOptions, Unit } from './Unit.ts';
 import type {
     BaseUnitDefinition,
     DerivedUnitDefinition,
     FactorDefinition,
 } from './types';
-import { ApproximateEqualityThreshold } from './float';
+import { ApproximateEqualityThreshold } from './float.ts';
 
 export class Quantity<
     U extends Record<string, BaseUnitDefinition>,

@@ -1,15 +1,19 @@
 {
-  "include": ["src/**/*.ts"],
-  "exclude": ["dist", "src/**/*.test.ts","src/preview.ts"],
-  "compilerOptions": {
-    "moduleResolution": "node",
-    "module": "ES6",
-    "target": "ES2020",
-    "noImplicitAny": true,
-    "strict": true,
-    "preserveConstEnums": true,
-    "sourceMap": true,
-    "declaration": true,
-    "declarationDir": "dist/"
-  }
+    "include": ["src/**/*.ts"],
+    "exclude": ["dist", "src/**/*.test.ts", "src/preview.ts"],
+    "compilerOptions": {
+        "moduleResolution": "node",
+        "allowImportingTsExtensions": true,
+        "noEmit": true,
+        "esModuleInterop": true,
+
+        "module": "ESNext",
+        "target": "ES2020",
+        "noImplicitAny": true,
+        "strict": true,
+        "preserveConstEnums": true,
+        "sourceMap": true,
+        "declaration": true,
+        "declarationDir": "dist/"
+    }
 }

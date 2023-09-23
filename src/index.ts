@@ -1,7 +1,7 @@
 /// <reference path="./types.ts" />
 
-export * from './Unit';
-export * from './UnitSystem';
-export * from './Quantity'
+export * from './Unit.ts';
+export * from './UnitSystem.ts';
+export * from './Quantity.ts'
 
-export type * from './types';
+export type * from './types.ts';
