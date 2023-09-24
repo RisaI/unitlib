@@ -8,7 +8,10 @@ import type {
     FactorDefinition,
 } from './types.ts';
 import { normalizeFactor, toUnicodeSuperscript } from './utils.ts';
-import { ApproximateEqualityThreshold, areApproximatelyEqual } from './float.ts';
+import {
+    ApproximateEqualityThreshold,
+    areApproximatelyEqual,
+} from './float.ts';
 
 export const UnityFactor: FactorDefinition = { mul: 1, base: 10, exp: 0 };
 Object.freeze(UnityFactor);
@@ -95,6 +98,16 @@ export class Unit<
             rhs.factor.mul * rhs.factor.base ** rhs.factor.exp,
             thresholds,
         );
+    }
+
+    /** Compatible units are such that can be added together, i.e. 1 kg + 1 g */
+    public isCompatible(rhs: Unit<any, any, any>): boolean {
+        //TODO add support for 1 m + 1 inch, i.e. different unit systems
+
+        const sameBase = !Object.keys(this.unitSystem.baseUnits).some(
+            (u) => !this.exponentOf(u).equals(rhs.exponentOf(u)),
+        );
+        return this.unitSystem === rhs.unitSystem && sameBase;
     }
 
     public pow(num: Fraction): Unit<U, F, D> {

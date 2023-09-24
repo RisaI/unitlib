@@ -56,6 +56,41 @@ export class Quantity<
         return this.multiply(rhs.inverse());
     }
 
+    /** Returns a new object that corresponds to this quantity in different units
+     * @example
+     * const q = new Quantity(42, SI.parseUnit('kg'));
+     * const q2 = q.inUnits(SI.parseUnit('g'));
+     * console.log(q2.value); // 42000
+     */
+    public inUnits(targetUnit: Unit<U, F, D>): Quantity<U, F, D> {
+        if (!this.unit.isCompatible(targetUnit)) {
+            throw new Error('Cannot convert incompatible units');
+        }
+        const valueInBase = this.unit.multiplyValueByFactor(this.value);
+        const valueInTarget = targetUnit.divideValueByFactor(valueInBase);
+        return new Quantity(valueInTarget, targetUnit);
+    }
+
+    public add(rhs: Quantity<U, F, D>): Quantity<U, F, D> {
+        if (!this.unit.isCompatible(rhs.unit)) {
+            throw new Error(
+                "Cannot add quantities that don't have compatible units",
+            );
+        }
+        const rhsInThis = rhs.inUnits(this.unit).value;
+        return new Quantity(this.value + rhsInThis, this.unit);
+    }
+
+    public subtract(rhs: Quantity<U, F, D>): Quantity<U, F, D> {
+        if (!this.unit.isCompatible(rhs.unit)) {
+            throw new Error(
+                "Cannot substract quantities that don't have compatible units",
+            );
+        }
+        const rhsInThis = rhs.inUnits(this.unit).value;
+        return new Quantity(this.value - rhsInThis, this.unit);
+    }
+
     public toString(opts: FormatOptions = {}) {
         return this.unit.multiply(this.value).toString();
     }
