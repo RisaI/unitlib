@@ -28,7 +28,7 @@ export class Quantity<
     }
 
     public isEqual(rhs: Quantity<U, F, D>): boolean {
-        if (this.value !== rhs.value) return false;
+        if (this.value !== rhs.inUnits(this.unit).value) return false;
         return this.unit.isEqual(rhs.unit);
     }
 
@@ -81,6 +81,7 @@ export class Quantity<
         return new Quantity(this.value + rhsInThis, this.unit);
     }
 
+    /** Returns equivalent of this - rhs */
     public subtract(rhs: Quantity<U, F, D>): Quantity<U, F, D> {
         if (!this.unit.isCompatible(rhs.unit)) {
             throw new Error(
@@ -89,6 +90,28 @@ export class Quantity<
         }
         const rhsInThis = rhs.inUnits(this.unit).value;
         return new Quantity(this.value - rhsInThis, this.unit);
+    }
+
+    /** returns equivalent of this > rhs */
+    public greaterThan(rhs: Quantity<U, F, D>): boolean {
+        if (!this.unit.isCompatible(rhs.unit)) {
+            throw new Error(
+                "Cannot compare quantities that don't have compatible units",
+            );
+        }
+        const rhsInThis = rhs.inUnits(this.unit).value;
+        return this.value > rhsInThis;
+    }
+
+    /** returns equivalent of this < rhs */
+    public lessThan(rhs: Quantity<U, F, D>): boolean {
+        if (!this.unit.isCompatible(rhs.unit)) {
+            throw new Error(
+                "Cannot compare quantities that don't have compatible units",
+            );
+        }
+        const rhsInThis = rhs.inUnits(this.unit).value;
+        return this.value < rhsInThis;
     }
 
     public toString(opts: FormatOptions = {}) {
