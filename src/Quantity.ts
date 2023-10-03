@@ -64,7 +64,9 @@ export class Quantity<
      */
     public inUnits(targetUnit: Unit<U, F, D>): Quantity<U, F, D> {
         if (!this.unit.isCompatible(targetUnit)) {
-            throw new Error('Cannot convert incompatible units');
+            throw new Error(
+                `Cannot convert incompatible units ${this.unit.toString()} and ${targetUnit.toString()}`,
+            );
         }
         const valueInBase = this.unit.multiplyValueByFactor(this.value);
         const valueInTarget = targetUnit.divideValueByFactor(valueInBase);
