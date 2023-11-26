@@ -28,6 +28,7 @@ export class Quantity<
     }
 
     public isEqual(rhs: Quantity<U, F, D>): boolean {
+        if (!this.unit.isCompatible(rhs.unit)) return false;
         if (this.value !== rhs.inUnits(this.unit).value) return false;
         return this.unit.isEqual(rhs.unit);
     }
@@ -117,6 +118,6 @@ export class Quantity<
     }
 
     public toString(opts: FormatOptions = {}) {
-        return this.unit.multiply(this.value).toString();
+        return this.unit.multiply(this.value).toString(opts);
     }
 }
