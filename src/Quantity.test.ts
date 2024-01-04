@@ -82,6 +82,12 @@ describe('Quantity', () => {
     });
 
     describe('multiply', () => {
+        it('should scale a quantity by a scalar', () => {
+            const q = new Quantity(5, SI.parseUnit('m'));
+            const p = q.multiply(3);
+            expect(p).toEqual(new Quantity(15, SI.parseUnit('m')));
+        });
+
         it('should return the product of two quantities', () => {
             const q1 = new Quantity(2, SI.parseUnit('m'));
             const q2 = new Quantity(3, SI.parseUnit('s'));

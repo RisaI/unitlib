@@ -50,7 +50,10 @@ export class Quantity<
         return new Quantity(this.value ** num.valueOf(), this.unit.pow(num));
     }
 
-    public multiply(rhs: Quantity<U, F, D>): Quantity<U, F, D> {
+    public multiply(rhs: Quantity<U, F, D> | number): Quantity<U, F, D> {
+        if (typeof rhs === 'number') {
+            return new Quantity(this.value * rhs, this.unit);
+        }
         return new Quantity(
             this.value * rhs.value,
             this.unit.multiply(rhs.unit),
