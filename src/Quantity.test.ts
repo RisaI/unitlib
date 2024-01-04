@@ -17,8 +17,16 @@ describe('Quantity', () => {
         });
     });
 
+    describe('negative', () => {
+        it('should return the additive inverse of the quantity', () => {
+            const q = new Quantity(500, SI.parseUnit('ms'));
+            const neg = q.negative();
+            expect(neg).toEqual(new Quantity(-500, SI.parseUnit('ms')));
+        });
+    });
+
     describe('inverse', () => {
-        it('should return the inverse of the quantity', () => {
+        it('should return the multiplicative inverse of the quantity', () => {
             const q = new Quantity(42, SI.parseUnit('m').inverse());
             const inv = q.inverse();
             expect(inv).toEqual(new Quantity(1 / 42, SI.parseUnit('m')));

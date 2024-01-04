@@ -27,6 +27,10 @@ export class Quantity<
         return new Quantity(1 / this.value, this.unit.inverse());
     }
 
+    public negative(): Quantity<U, F, D> {
+        return new Quantity(-this.value, this.unit);
+    }
+
     public isEqual(rhs: Quantity<U, F, D>): boolean {
         if (!this.unit.isCompatible(rhs.unit)) return false;
         if (this.value !== rhs.inUnits(this.unit).value) return false;
