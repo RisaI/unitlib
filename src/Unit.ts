@@ -274,6 +274,17 @@ export class Unit<
     }
 
     public toString(opts: FormatOptions = {}): string {
+        if (this.isUnitless) {
+            const { mul, exp, base } = this.factor;
+            const parts: string[] = [];
+
+            if (mul !== 1) parts.push(`${mul}`);
+            if (exp.valueOf() !== 0) parts.push(`${base}^${exp}`);
+            if (parts.length === 0) parts.push('1');
+
+            return parts.join(' * ');
+        }
+
         let prefix = '';
         let numerator: string[] = [];
         let denominator: string[] = [];

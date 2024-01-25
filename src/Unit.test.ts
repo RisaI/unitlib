@@ -84,18 +84,24 @@ describe('unit ops', () => {
     });
 
     test('inverse', () => {
-        const u = unit({
-            mol: fr(2),
-            s: fr(-4),
-            g: fr(1),
-            A: fr(0),
-            cd: undefined,
-        });
-        const v = unit({
-            mol: fr(-2),
-            s: fr(4),
-            g: fr(-1),
-        });
+        const u = unit(
+            {
+                mol: fr(2),
+                s: fr(-4),
+                g: fr(1),
+                A: fr(0),
+                cd: undefined,
+            },
+            { mul: 2, base: 10, exp: 2 },
+        );
+        const v = unit(
+            {
+                mol: fr(-2),
+                s: fr(4),
+                g: fr(-1),
+            },
+            { mul: 1 / 2, base: 10, exp: -2 },
+        );
 
         expect(u.inverse().isEqual(v)).toBe(true);
     });
@@ -383,5 +389,17 @@ describe('factor inference', () => {
         for (const [val, expected] of test) {
             expect(u.withBestFactorFor(val).toString()).toEqual(expected);
         }
+    });
+
+    test('formating to string', () => {
+        expect(unit({}, { mul: 1, base: 10, exp: 0 }).toString()).toEqual('1');
+
+        expect(
+            unit({ s: fr(1) }, { mul: 1, base: 10, exp: -3 }).toString(),
+        ).toEqual('ms');
+
+        expect(unit({}, { mul: 1, base: 10, exp: -3 }).toString()).toEqual(
+            '10^-3',
+        );
     });
 });
