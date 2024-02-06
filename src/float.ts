@@ -139,7 +139,9 @@ export function formatFloat(
 
     if (fractionalDigits !== 0n) {
         result.push(fractionalPartSeparator);
-        const fractionalDigitsStr = fractionalDigits.toString();
+        const fractionalDigitsStr = fractionalDigits
+            .toString()
+            .padStart(decimalPlaces, '0');
         result.push(
             digitGroupLength === undefined
                 ? fractionalDigitsStr
