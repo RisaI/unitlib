@@ -1,3 +1,5 @@
+import { NumberFormatOptions, RoundingStrategy } from './types';
+
 export interface ApproximateEqualityThreshold {
     /**
      * Number of ULPs, or _units of lowest precision_, between the
@@ -87,4 +89,135 @@ export function areApproximatelyEqual(
     }
 
     return false;
+}
+
+export function formatFloat(
+    n: number,
+    {
+        fancyUnicode,
+        decimalPlaces,
+        roundingStrategy,
+        digitGroupLength,
+        digitGroupSeparator,
+        fractionalPartSeparator,
+    }: NumberFormatOptions,
+): string {
+    fractionalPartSeparator ??= '.';
+    digitGroupSeparator ??= fancyUnicode ? ' ' : ' ';
+    roundingStrategy ??= 'half-to-even';
+    const minusSign = fancyUnicode ? '−' : '-';
+    decimalPlaces ??= n.toString().split('.')[1]?.length ?? 0;
+
+    const sign = Math.sign(n);
+
+    const integerPart = BigInt(
+        roundFloat(
+            Math.abs(n),
+            decimalPlaces === 0 ? roundingStrategy : 'down',
+        ),
+    );
+
+    const fractionalPart = Math.abs(n) % 1;
+    const fractionalDigits = BigInt(
+        roundFloat(fractionalPart * 10 ** decimalPlaces, roundingStrategy),
+    );
+
+    const result: string[] = [];
+    if (sign < 0) result.push(minusSign);
+
+    const integerPartStr = integerPart.toString();
+    result.push(
+        digitGroupLength === undefined
+            ? integerPartStr
+            : groupAndSeparate(
+                  integerPartStr,
+                  digitGroupLength,
+                  digitGroupSeparator,
+                  'from-end',
+              ),
+    );
+
+    if (fractionalDigits !== 0n) {
+        result.push(fractionalPartSeparator);
+        const fractionalDigitsStr = fractionalDigits.toString();
+        result.push(
+            digitGroupLength === undefined
+                ? fractionalDigitsStr
+                : groupAndSeparate(
+                      fractionalDigitsStr,
+                      digitGroupLength,
+                      digitGroupSeparator,
+                      'from-start',
+                  ),
+        );
+    }
+
+    return result.join('');
+}
+
+function groupAndSeparate(
+    str: string,
+    groupLength: number,
+    separator: string,
+    order: 'from-start' | 'from-end',
+): string {
+    const reverse = order === 'from-end';
+    if (reverse) str = [...str].reverse().join('');
+
+    const result: string[] = [];
+    let i = 0;
+    for (const ch of str) {
+        if (i++ >= groupLength) {
+            result.push(separator);
+            i = 1;
+        }
+        result.push(ch);
+    }
+
+    if (reverse) result.reverse();
+    return result.join('');
+}
+
+export function roundFloat(n: number, strategy: RoundingStrategy): number {
+    const ceil = Math.ceil(n);
+    const floor = Math.floor(n);
+
+    switch (strategy) {
+        case 'up':
+            return ceil;
+        case 'down':
+            return floor;
+        case 'toward-zero':
+            return n < 0 ? ceil : floor;
+        case 'away-from-zero':
+            return n < 0 ? floor : ceil;
+        case 'to-even':
+            return floor % 2 === 0 ? floor : ceil;
+        case 'to-odd':
+            return floor % 2 === 0 ? ceil : floor;
+    }
+
+    const fractionalPart = Math.abs(n) % 1;
+    if (strategy === 'stochastic') {
+        return Math.random() < fractionalPart ? ceil : floor;
+    }
+
+    if (fractionalPart !== 0.5) return Math.round(n);
+
+    switch (strategy) {
+        case 'half-up':
+            return ceil;
+        case 'half-down':
+            return floor;
+        case 'half-toward-zero':
+            return n < 0 ? ceil : floor;
+        case 'half-away-from-zero':
+            return n < 0 ? floor : ceil;
+        case 'half-to-even':
+            return floor % 2 === 0 ? floor : ceil;
+        case 'half-to-odd':
+            return floor % 2 === 0 ? ceil : floor;
+        case 'half-random':
+            return Math.random() < 0.5 ? floor : ceil;
+    }
 }

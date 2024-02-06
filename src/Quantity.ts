@@ -1,9 +1,10 @@
 import type Fraction from 'fraction.js';
-import type { FormatOptions, Unit } from './Unit.ts';
+import type { Unit } from './Unit.ts';
 import type {
     BaseUnitDefinition,
     DerivedUnitDefinition,
     FactorDefinition,
+    QuantityFormatOptions,
 } from './types';
 import { ApproximateEqualityThreshold } from './float.ts';
 
@@ -124,7 +125,7 @@ export class Quantity<
         return this.value < rhsInThis;
     }
 
-    public toString(opts: FormatOptions = {}) {
+    public toString(opts: QuantityFormatOptions = {}) {
         return this.unit.multiply(this.value).toString(opts);
     }
 }

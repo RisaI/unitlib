@@ -6,22 +6,17 @@ import type {
     BaseUnitDefinition,
     DerivedUnitDefinition,
     FactorDefinition,
+    UnitFormatOptions,
 } from './types.ts';
 import { normalizeFactor, toUnicodeSuperscript } from './utils.ts';
 import {
     ApproximateEqualityThreshold,
     areApproximatelyEqual,
+    formatFloat,
 } from './float.ts';
 
 export const UnityFactor: FactorDefinition = { mul: 1, base: 10, exp: 0 };
 Object.freeze(UnityFactor);
-
-export interface FormatOptions {
-    compact?: boolean;
-    forceExponential?: boolean;
-    fancyUnicode?: boolean;
-    useNegativeExponents?: boolean;
-}
 
 export class Unit<
     U extends Record<string, BaseUnitDefinition>,
@@ -273,12 +268,12 @@ export class Unit<
         // return Math.exp(Math.log(value / mul) - exp * Math.log(base));
     }
 
-    public toString(opts: FormatOptions = {}): string {
+    public toString(opts: UnitFormatOptions = {}): string {
         if (this.isUnitless) {
             const { mul, exp, base } = this.factor;
             const parts: string[] = [];
 
-            if (mul !== 1) parts.push(`${mul}`);
+            if (mul !== 1) parts.push(formatFloat(mul, opts));
             if (exp.valueOf() !== 0) parts.push(`${base}^${exp}`);
             if (parts.length === 0) parts.push('1');
 
@@ -314,7 +309,7 @@ export class Unit<
             const { mul, exp, base } = this.factor;
 
             if (mul !== 1) {
-                prefix += `${mul} * `;
+                prefix += `${formatFloat(mul, opts)} * `;
             }
 
             if (exp.valueOf() === 1) {
