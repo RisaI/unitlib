@@ -171,10 +171,13 @@ export class Unit<
 
             factor.base = major.base;
             factor.exp = major.exp;
-            // TODO: this will lead to numerical inaccuracy
-            // TODO: perhaps attempt to put most of the value into the exp first
-            // TODO: something like exp += Math.floor(minor.exp * Math.log(minor.base) / Math.log(major.base))
-            factor.mul *= Math.pow(minor.base, minor.exp);
+
+            const furtherExp =
+                (minor.exp * Math.log(minor.base)) / Math.log(major.base);
+            factor.exp += Math.floor(furtherExp);
+            factor.mul *= major.base ** (furtherExp - Math.floor(furtherExp));
+
+            // TODO: check correctness
         }
 
         return new Unit(this.unitSystem, normalizeFactor(factor), baseUnits);

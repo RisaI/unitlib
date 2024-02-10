@@ -1,13 +1,22 @@
 import { FactorDefinition } from './types.ts';
 
+export const divideFactors = (
+    a: Readonly<FactorDefinition>,
+    b: Readonly<FactorDefinition>,
+): number => {
+    const baseLogRatio = Math.log(a.base) / Math.log(b.base);
+    return (a.mul / b.mul) * a.base ** (a.exp - b.exp * baseLogRatio);
+};
+
 export const normalizeFactor = (
     factor: Readonly<FactorDefinition>,
 ): FactorDefinition => {
-    if (factor.base === 1) return {
-        mul: factor.mul,
-        base: 1,
-        exp: 0,
-    };
+    if (factor.base === 1)
+        return {
+            mul: factor.mul,
+            base: 1,
+            exp: 0,
+        };
 
     const sign = Math.sign(factor.mul);
     const logInBase = Math.log(factor.mul * sign) / Math.log(factor.base);

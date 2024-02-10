@@ -388,8 +388,10 @@ describe('factor inference', () => {
             expect(u.withBestFactorFor(val).toString()).toEqual(expected);
         }
     });
+});
 
-    test('formating to string', () => {
+describe('formating to string', () => {
+    test('basic', () => {
         expect(unit({}, { mul: 1, base: 10, exp: 0 }).toString()).toEqual('1');
 
         expect(

@@ -7,6 +7,8 @@ import type {
     DerivedUnitDefinition,
     FactorDefinition,
 } from './types';
+import { divideFactors } from './utils.ts';
+import { yeet } from 'yeet-ts';
 
 export type BaseUnitsOf<S> = S extends UnitSystem<infer U, infer F, infer D>
     ? U
@@ -50,6 +52,34 @@ export class UnitSystem<
             ([, def]) =>
                 def.base === f.base && def.exp === f.exp && def.mul === f.mul,
         )?.[0];
+    }
+
+    public getNearestLowerFactor(needle: FactorDefinition): {
+        factor: keyof F;
+        ratio: number;
+    } {
+        let nearestLower: { ratio: number; factor: keyof F } | undefined;
+        let nearestHigher: { ratio: number; factor: keyof F } | undefined;
+        for (const [factor, def] of [
+            ...Object.entries(this.factors),
+            <const>['', { mul: 1, base: 10, exp: 0 }],
+        ]) {
+            const ratio = divideFactors(needle, def);
+
+            if (ratio >= 1) {
+                if (!nearestLower || nearestLower.ratio > ratio)
+                    nearestLower = { ratio, factor };
+            } else {
+                if (!nearestHigher || nearestHigher.ratio < ratio)
+                    nearestHigher = { ratio, factor };
+            }
+        }
+
+        return (
+            nearestLower ??
+            nearestHigher ??
+            yeet('Cannot find the nearest factor as there are none.')
+        );
     }
 
     public createUnit(
