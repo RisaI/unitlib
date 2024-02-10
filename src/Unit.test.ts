@@ -2,9 +2,7 @@ import Fraction from 'fraction.js';
 import { IECFactors, IECBaseUnits, SIBaseUnits, SIFactors } from './systems';
 import { Unit } from './Unit';
 import { UnitSystem } from './UnitSystem';
-
-// @ts-ignore
-import { log } from 'console';
+import { beforeAll, describe, test, expect } from 'bun:test';
 
 const fr = (a: number, b?: number) => new Fraction(a, b);
 
@@ -397,6 +395,8 @@ describe('factor inference', () => {
         expect(
             unit({ s: fr(1) }, { mul: 1, base: 10, exp: -3 }).toString(),
         ).toEqual('ms');
+
+        expect(unitSystem.parseUnit('km').toString()).toEqual('km');
 
         expect(unit({}, { mul: 1, base: 10, exp: -3 }).toString()).toEqual(
             '10^-3',

@@ -1,9 +1,5 @@
-import {
-    absDistance,
-    relDistance,
-    ulpDistance,
-    areApproximatelyEqual,
-} from './float';
+import { absDistance, relDistance, ulpDistance } from './float';
+import { describe, test, expect } from 'bun:test';
 
 const values = [
     0,
