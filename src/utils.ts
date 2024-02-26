@@ -1,3 +1,4 @@
+import Fraction from 'fraction.js';
 import { FactorDefinition } from './types.ts';
 
 export const divideFactors = (
@@ -5,7 +6,7 @@ export const divideFactors = (
     b: Readonly<FactorDefinition>,
 ): number => {
     const baseLogRatio = Math.log(a.base) / Math.log(b.base);
-    return (a.mul / b.mul) * a.base ** (a.exp - b.exp * baseLogRatio);
+    return (a.mul / b.mul) * a.base ** (+a.exp - +b.exp * baseLogRatio);
 };
 
 export const normalizeFactor = (
@@ -15,7 +16,7 @@ export const normalizeFactor = (
         return {
             mul: factor.mul,
             base: 1,
-            exp: 0,
+            exp: new Fraction(0),
         };
 
     const sign = Math.sign(factor.mul);
@@ -28,8 +29,19 @@ export const normalizeFactor = (
 
     return {
         base: factor.base,
-        exp: factor.exp + order,
+        exp: factor.exp.add(order),
         mul: sign * Math.pow(factor.base, logInBase - order),
+    };
+};
+
+export const factorPow = (
+    factor: Readonly<FactorDefinition>,
+    exp: Fraction,
+): FactorDefinition => {
+    return {
+        mul: factor.mul ** +exp,
+        base: factor.base,
+        exp: factor.exp.mul(exp),
     };
 };
 

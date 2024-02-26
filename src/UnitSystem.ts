@@ -47,10 +47,14 @@ export class UnitSystem<
      * SI.getFactorSymbol({ mul: 1, base: 10, exp: 3 }) // "k"
      * IEC.getFactorSymbol({ mul: 1, base: 2, exp: 20 }) // "Mi"
      */
-    public getFactorSymbol(f: FactorDefinition): keyof F | undefined {
+    public getFactorSymbol(
+        f: FactorDefinition,
+    ): (string & keyof F) | undefined {
         return Object.entries(this.factors).find(
             ([, def]) =>
-                def.base === f.base && def.exp === f.exp && def.mul === f.mul,
+                def.base === f.base &&
+                def.exp.equals(f.exp) &&
+                def.mul === f.mul,
         )?.[0];
     }
 
@@ -62,7 +66,7 @@ export class UnitSystem<
         let nearestHigher: { ratio: number; factor: keyof F } | undefined;
         for (const [factor, def] of [
             ...Object.entries(this.factors),
-            <const>['', { mul: 1, base: 10, exp: 0 }],
+            <const>['', { mul: 1, base: 10, exp: new Fraction(0) }],
         ]) {
             const ratio = divideFactors(needle, def);
 
@@ -148,7 +152,7 @@ export class UnitSystem<
         const factor: FactorDefinition = { ...UnityFactor };
         {
             const factorRegex =
-                /^(?<mul>\d+[\.,]?\d*)?\s*\*?\s*((?<base>\d+)\^(?<exp>\d+))?\s*\*?\s*/;
+                /^(?<mul>\d+[\.,]?\d*)?\s*\*?\s*((?<base>\d+)\^(?<exp>-?\s*\d+\s*(\/\s*\d+)?))?\s*\*?\s*/;
             const match = text.match(factorRegex);
             text = text.slice(match?.[0].length ?? 0);
 
@@ -156,7 +160,7 @@ export class UnitSystem<
 
             if (mul) factor.mul = Number.parseFloat(mul);
             if (base) factor.base = Number.parseInt(base);
-            if (exp) factor.exp = Number.parseInt(exp);
+            if (exp) factor.exp = new Fraction(exp);
         }
 
         // Initialize next unit

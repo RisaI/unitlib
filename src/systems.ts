@@ -1,3 +1,4 @@
+import Fraction from 'fraction.js';
 import { UnitSystem } from './UnitSystem.ts';
 import type { BaseUnitDefinition, FactorDefinition } from './types.ts';
 
@@ -23,27 +24,27 @@ export const SIBaseUnits = Object.freeze(SIBaseUnits_) as BUDict<
 >;
 
 const SIFactors_ = {
-    da: { mul: 1, base: 10, exp: 1 },
-    h: { mul: 1, base: 10, exp: 2 },
-    k: { mul: 1, base: 10, exp: 3 },
-    M: { mul: 1, base: 10, exp: 6 },
-    G: { mul: 1, base: 10, exp: 9 },
-    T: { mul: 1, base: 10, exp: 12 },
-    P: { mul: 1, base: 10, exp: 15 },
-    E: { mul: 1, base: 10, exp: 18 },
-    Z: { mul: 1, base: 10, exp: 21 },
-    Y: { mul: 1, base: 10, exp: 24 },
+    da: { mul: 1, base: 10, exp: new Fraction(1) },
+    h: { mul: 1, base: 10, exp: new Fraction(2) },
+    k: { mul: 1, base: 10, exp: new Fraction(3) },
+    M: { mul: 1, base: 10, exp: new Fraction(6) },
+    G: { mul: 1, base: 10, exp: new Fraction(9) },
+    T: { mul: 1, base: 10, exp: new Fraction(12) },
+    P: { mul: 1, base: 10, exp: new Fraction(15) },
+    E: { mul: 1, base: 10, exp: new Fraction(18) },
+    Z: { mul: 1, base: 10, exp: new Fraction(21) },
+    Y: { mul: 1, base: 10, exp: new Fraction(24) },
 
-    d: { mul: 1, base: 10, exp: -1 },
-    c: { mul: 1, base: 10, exp: -2 },
-    m: { mul: 1, base: 10, exp: -3 },
-    u: { mul: 1, base: 10, exp: -6 },
-    n: { mul: 1, base: 10, exp: -9 },
-    p: { mul: 1, base: 10, exp: -12 },
-    f: { mul: 1, base: 10, exp: -15 },
-    a: { mul: 1, base: 10, exp: -18 },
-    z: { mul: 1, base: 10, exp: -21 },
-    y: { mul: 1, base: 10, exp: -24 },
+    d: { mul: 1, base: 10, exp: new Fraction(-1) },
+    c: { mul: 1, base: 10, exp: new Fraction(-2) },
+    m: { mul: 1, base: 10, exp: new Fraction(-3) },
+    u: { mul: 1, base: 10, exp: new Fraction(-6) },
+    n: { mul: 1, base: 10, exp: new Fraction(-9) },
+    p: { mul: 1, base: 10, exp: new Fraction(-12) },
+    f: { mul: 1, base: 10, exp: new Fraction(-15) },
+    a: { mul: 1, base: 10, exp: new Fraction(-18) },
+    z: { mul: 1, base: 10, exp: new Fraction(-21) },
+    y: { mul: 1, base: 10, exp: new Fraction(-24) },
 };
 
 export const SIFactors = Object.freeze(SIFactors_) as FactorDict<
@@ -64,14 +65,14 @@ export const IECBaseUnits = Object.freeze(IECBaseUnits_) as BUDict<
 >;
 
 const IECFactors_ = {
-    Ki: { mul: 1, base: 2, exp: 10 },
-    Mi: { mul: 1, base: 2, exp: 20 },
-    Gi: { mul: 1, base: 2, exp: 30 },
-    Ti: { mul: 1, base: 2, exp: 40 },
-    Pi: { mul: 1, base: 2, exp: 50 },
-    Ei: { mul: 1, base: 2, exp: 60 },
-    Zi: { mul: 1, base: 2, exp: 70 },
-    Yi: { mul: 1, base: 2, exp: 80 },
+    Ki: { mul: 1, base: 2, exp: new Fraction(10) },
+    Mi: { mul: 1, base: 2, exp: new Fraction(20) },
+    Gi: { mul: 1, base: 2, exp: new Fraction(30) },
+    Ti: { mul: 1, base: 2, exp: new Fraction(40) },
+    Pi: { mul: 1, base: 2, exp: new Fraction(50) },
+    Ei: { mul: 1, base: 2, exp: new Fraction(60) },
+    Zi: { mul: 1, base: 2, exp: new Fraction(70) },
+    Yi: { mul: 1, base: 2, exp: new Fraction(80) },
 };
 
 export const IECFactors = Object.freeze(IECFactors_) as FactorDict<

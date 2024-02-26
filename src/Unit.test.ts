@@ -55,14 +55,14 @@ describe('unit ops', () => {
     test('isEqual', () => {
         const equals = [
             unit({ m: fr(2) }),
-            unit({ m: fr(2) }, { mul: 1, base: 10, exp: 0 }),
-            unit({ m: fr(2) }, { mul: 1, base: 2, exp: 0 }),
+            unit({ m: fr(2) }, { mul: 1, base: 10, exp: fr(0) }),
+            unit({ m: fr(2) }, { mul: 1, base: 2, exp: fr(0) }),
         ];
         const nonequals = [
             unit({ m: fr(3) }),
             unit({ s: fr(2) }),
-            unit({ m: fr(2) }, { mul: 2, base: 10, exp: 0 }),
-            unit({ m: fr(2) }, { mul: 1, base: 2, exp: 1 }),
+            unit({ m: fr(2) }, { mul: 2, base: 10, exp: fr(0) }),
+            unit({ m: fr(2) }, { mul: 1, base: 2, exp: fr(1) }),
         ];
 
         for (const a of equals) {
@@ -76,8 +76,8 @@ describe('unit ops', () => {
     });
 
     test('isEqual distinguishes mul from base^exp', () => {
-        const a = unit({ m: fr(1) }, { mul: 10, base: 10, exp: 1 });
-        const b = unit({ m: fr(1) }, { mul: 1, base: 10, exp: 2 });
+        const a = unit({ m: fr(1) }, { mul: 10, base: 10, exp: fr(1) });
+        const b = unit({ m: fr(1) }, { mul: 1, base: 10, exp: fr(2) });
         expect(a.isEqual(b)).toBe(false);
     });
 
@@ -90,7 +90,7 @@ describe('unit ops', () => {
                 A: fr(0),
                 cd: undefined,
             },
-            { mul: 2, base: 10, exp: 2 },
+            { mul: 2, base: 10, exp: fr(2) },
         );
         const v = unit(
             {
@@ -98,7 +98,7 @@ describe('unit ops', () => {
                 s: fr(4),
                 g: fr(-1),
             },
-            { mul: 1 / 2, base: 10, exp: -2 },
+            { mul: 1 / 2, base: 10, exp: fr(-2) },
         );
 
         expect(u.inverse().isEqual(v)).toBe(true);
@@ -168,10 +168,13 @@ describe('unit ops', () => {
     });
 
     test('multipy realworld', () => {
-        const c = unit({ m: fr(1), s: fr(-1) }, { mul: 3, base: 10, exp: 8 });
+        const c = unit(
+            { m: fr(1), s: fr(-1) },
+            { mul: 3, base: 10, exp: fr(8) },
+        );
         const mu0 = unit(
             { g: fr(1), m: fr(1), s: fr(-2), A: fr(-2) },
-            { mul: 4 * 3.14, base: 10, exp: -7 + 3 },
+            { mul: 4 * 3.14, base: 10, exp: fr(-7 + 3) },
         );
         const epsilon0 = mu0.multiply(c.pow(fr(2))).inverse();
 
@@ -183,7 +186,7 @@ describe('unit ops', () => {
         });
 
         const value =
-            epsilon0.factor.mul * epsilon0.factor.base ** epsilon0.factor.exp;
+            epsilon0.factor.mul * epsilon0.factor.base ** +epsilon0.factor.exp;
 
         expect(value).toBeCloseTo(1 / (4 * 3.14 * 3e8 ** 2));
 
@@ -191,15 +194,15 @@ describe('unit ops', () => {
     });
 
     test('multiply edge cases', () => {
-        const a = unit({}, { mul: 1, base: 1, exp: 1 });
+        const a = unit({}, { mul: 1, base: 1, exp: fr(1) });
         expect(a.multiply(a).multiplyValueByFactor(1)).toBe(1);
         expect(a.divide(a).multiplyValueByFactor(1)).toBe(1);
     });
 
     test('withFactor', () => {
-        const kilo = unit({}, { mul: 1, base: 10, exp: 3 });
+        const kilo = unit({}, { mul: 1, base: 10, exp: fr(3) });
         const m = unit({ m: fr(1) });
-        const km = m.withFactor({ exp: 3 });
+        const km = m.withFactor({ exp: fr(3) });
 
         expect(kilo.multiply(m).isEqual(km)).toBe(true);
     });
@@ -221,9 +224,9 @@ describe('unit parsing', () => {
             ['K', unit({ K: fr(1) })],
             ['m', unit({ m: fr(1) })],
             // with a known factor
-            ['kK', unit({ K: fr(1) }, { base: 10, exp: 3, mul: 1 })],
+            ['kK', unit({ K: fr(1) }, { base: 10, exp: fr(3), mul: 1 })],
             // with reduntant space
-            ['k K', unit({ K: fr(1) }, { base: 10, exp: 3, mul: 1 })],
+            ['k K', unit({ K: fr(1) }, { base: 10, exp: fr(3), mul: 1 })],
             [
                 'g s',
                 unit({
@@ -253,7 +256,7 @@ describe('unit parsing', () => {
                         s: fr(-2),
                         g: fr(-1),
                     },
-                    { mul: 1, base: 10, exp: -3 },
+                    { mul: 1, base: 10, exp: fr(-3) },
                 ),
             ],
             // TODO: scientific factor
@@ -291,20 +294,20 @@ describe('unit printing', () => {
         expect(
             unit(
                 { A: fr(1), B: undefined },
-                { mul: 24, base: 10, exp: 0 },
+                { mul: 24, base: 10, exp: fr(0) },
             ).toString(),
         ).toBe('24 A');
 
         expect(
-            unit({ A: fr(1) }, { mul: 3, base: 24, exp: 1 }).toString(),
+            unit({ A: fr(1) }, { mul: 3, base: 24, exp: fr(1) }).toString(),
         ).toBe('3 * 24 A');
 
         expect(
-            unit({ A: fr(1) }, { mul: 24, base: 3, exp: 5 }).toString(),
+            unit({ A: fr(1) }, { mul: 24, base: 3, exp: fr(5) }).toString(),
         ).toBe('24 * 3^5 A');
 
         expect(
-            unit({ A: fr(1) }, { mul: 1, base: 10, exp: 6 }).toString(),
+            unit({ A: fr(1) }, { mul: 1, base: 10, exp: fr(6) }).toString(),
         ).toBe('MA');
     });
 
@@ -353,7 +356,7 @@ describe('unit printing', () => {
 
 describe('factor inference', () => {
     test('factorless base', () => {
-        const u = unit({ s: fr(1) }, { base: 10, exp: 0, mul: 1 });
+        const u = unit({ s: fr(1) }, { base: 10, exp: fr(0), mul: 1 });
 
         const test = [
             [0, 's'],
@@ -373,7 +376,7 @@ describe('factor inference', () => {
     });
 
     test('base with factor', () => {
-        const u = unit({ s: fr(1) }, { base: 10, exp: 3, mul: 1 });
+        const u = unit({ s: fr(1) }, { base: 10, exp: fr(3), mul: 1 });
 
         const test = [
             [10_000, 'Ms'],
@@ -392,15 +395,17 @@ describe('factor inference', () => {
 
 describe('formating to string', () => {
     test('basic', () => {
-        expect(unit({}, { mul: 1, base: 10, exp: 0 }).toString()).toEqual('1');
+        expect(unit({}, { mul: 1, base: 10, exp: fr(0) }).toString()).toEqual(
+            '1',
+        );
 
         expect(
-            unit({ s: fr(1) }, { mul: 1, base: 10, exp: -3 }).toString(),
+            unit({ s: fr(1) }, { mul: 1, base: 10, exp: fr(-3) }).toString(),
         ).toEqual('ms');
 
         expect(unitSystem.parseUnit('km').toString()).toEqual('km');
 
-        expect(unit({}, { mul: 1, base: 10, exp: -3 }).toString()).toEqual(
+        expect(unit({}, { mul: 1, base: 10, exp: fr(-3) }).toString()).toEqual(
             '10^-3',
         );
     });

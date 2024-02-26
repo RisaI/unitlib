@@ -5,8 +5,10 @@ import type {
     DerivedUnitDefinition,
     FactorDefinition,
     QuantityFormatOptions,
+    UnitFormatExponentPart,
+    UnitFormatPart,
 } from './types';
-import { ApproximateEqualityThreshold } from './float.ts';
+import { ApproximateEqualityThreshold, formatFloat } from './float.ts';
 
 export class Quantity<
     U extends Record<string, BaseUnitDefinition>,
@@ -126,6 +128,58 @@ export class Quantity<
     }
 
     public toString(opts: QuantityFormatOptions = {}) {
-        return this.unit.multiply(this.value).toString(opts);
+        return this.toParts(opts)
+            .map(({ string }) => string)
+            .join('');
+    }
+
+    public toParts(opts: QuantityFormatOptions = {}): UnitFormatPart[] {
+        /* Helper functions */
+        const pad = (str: string) => (opts.compact ? str : ` ${str} `);
+        const mulSign = (): UnitFormatPart => ({
+            type: 'multiplicationSign',
+            string: pad(opts.fancyUnicode ? '·' : '*'),
+        });
+
+        /* Formatting */
+
+        if (this.value === 1) return this.unit.toParts(opts);
+        if (this.unit.isUnitless) {
+            const value = this.unit.multiplyValueByFactor(this.value);
+            return [
+                {
+                    type: 'multiplicator',
+                    number: value,
+                    string: formatFloat(value, opts),
+                },
+            ];
+        }
+
+        let value = this.value;
+        const parts = this.unit.toParts(opts);
+        if (parts[0].type === 'multiplicator') {
+            value *= parts[0].number;
+            parts.shift();
+        }
+
+        if (
+            parts.length > 0 &&
+            parts[0].type !== 'unit' &&
+            parts[0].type !== 'multiplicationSign'
+        ) {
+            parts.unshift(mulSign());
+        }
+
+        const valuePart: UnitFormatPart = {
+            type: 'multiplicator',
+            number: value,
+            string: formatFloat(value, opts),
+        };
+        if (parts[0]?.type === 'unit' && !opts.compact) {
+            valuePart.string += ' ';
+        }
+
+        parts.unshift(valuePart);
+        return parts;
     }
 }
