@@ -25,12 +25,12 @@ x.toString({ forceExponential: true }) // "3.2 * 10^3 m^2 / s^2"
 x.toParts({ forceExponential: true })
 // [
 //   { type: 'multiplicator', string: '3.2', number: 3.2 },
-//   { type: 'multiplicationSign', string: '*' },
+//   { type: 'multiplicationSign', string: ' * ' },
 //   { type: 'base', string: '10', number: 10 },
 //   { type: 'exponent', string: '^3', number: 3 },
-//   { type: 'unit', string: 'm^2', prefix: '', baseUnit: 'm', exponent: { string: '^2', number: 2 } },
-//   { type: 'divisionSign', string: '/' },
-//   { type: 'unit', string: 's^2', prefix: '', baseUnit: 's', exponent: { string: '^2', number: 2 } }
+//   { type: 'unit', string: 'm^2', prefix: '', baseUnit: 'm', exponent: { type: 'exponent', string: '^2', number: 2 } },
+//   { type: 'divisionSign', string: ' / ' },
+//   { type: 'unit', string: 's^2', prefix: '', baseUnit: 's', exponent: { type: 'exponent', string: '^2', number: 2 } }
 // ]
 ```
 
