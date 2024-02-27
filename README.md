@@ -3,11 +3,11 @@ A modern library for unit conversion and manipulation with zero dependencies and
 
 **Installation:**
 ```sh
-pnmp install unitlib
+pnmp install unitlib fraction.js
 # or
-yarn add unitlib
+yarn add unitlib fraction.js
 # or
-npm install unitlib
+npm install unitlib fraction.js
 ```
 
 **Example usage:**

@@ -1,6 +1,6 @@
 {
     "name": "unitlib",
-    "version": "0.7.0",
+    "version": "0.8.0",
     "description": "A unit library",
     "repository": {
         "type": "git",
@@ -44,7 +44,9 @@
         "vite-plugin-dts": "^3.5.3"
     },
     "dependencies": {
-        "fraction.js": "^4.2.1",
         "yeet-ts": "^1.0.3"
+    },
+    "peerDependencies": {
+        "fraction.js": "^4.2.1"
     }
 }
