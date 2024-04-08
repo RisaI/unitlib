@@ -206,6 +206,21 @@ describe('unit ops', () => {
 
         expect(kilo.multiply(m).isEqual(km)).toBe(true);
     });
+
+    test('unit conversions', () => {
+        const m = unit({ m: fr(1) });
+        const km = m.withFactor({ exp: fr(3) });
+        const cm = m.withFactor({ exp: fr(-2) });
+
+        expect(m.conversionFactorTo(km)).toBeCloseTo(0.001);
+        expect(m.conversionFactorFrom(km)).toBeCloseTo(1000);
+
+        expect(m.conversionFactorTo(cm)).toBeCloseTo(100);
+        expect(m.conversionFactorFrom(cm)).toBeCloseTo(0.01);
+
+        expect(cm.conversionFactorTo(km)).toBeCloseTo(1e-5);
+        expect(cm.conversionFactorFrom(km)).toBeCloseTo(1e5);
+    });
 });
 
 describe('unit parsing', () => {

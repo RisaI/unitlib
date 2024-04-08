@@ -282,6 +282,40 @@ export class Unit<
         // return Math.exp(Math.log(value / mul) - exp * Math.log(base));
     }
 
+    /**
+     * Takes another unit, which is compatible with this one, and returns
+     * a number such that if you take a quantity expressed in this unit
+     * and multiply it by the number, you will have computed the quantity
+     * expressed in the provided unit.
+     */
+    public conversionFactorTo(targetUnit: Unit<U, F, D>): number {
+        if (!this.isCompatible(targetUnit)) {
+            throw new Error(
+                `Cannot convert between incompatible units ${this} and ${targetUnit}`,
+            );
+        }
+        const valueInBase = this.multiplyValueByFactor(1);
+        const valueInTarget = targetUnit.divideValueByFactor(valueInBase);
+        return valueInTarget;
+    }
+
+    /**
+     * Takes another unit, which is compatible with this one, and returns
+     * a number such that if you take a quantity expressed in the provided
+     * unit and multiply it by the number, you will have computed the quantity
+     * expressed in this unit.
+     */
+    public conversionFactorFrom(sourceUnit: Unit<U, F, D>): number {
+        if (!this.isCompatible(sourceUnit)) {
+            throw new Error(
+                `Cannot convert between incompatible units ${this} and ${sourceUnit}`,
+            );
+        }
+        const valueInBase = sourceUnit.multiplyValueByFactor(1);
+        const valueInThis = this.divideValueByFactor(valueInBase);
+        return valueInThis;
+    }
+
     public toString(opts: UnitFormatOptions = {}): string {
         return this.toParts(opts)
             .map(({ string }) => string)
