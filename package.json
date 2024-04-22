@@ -1,6 +1,6 @@
 {
     "name": "unitlib",
-    "version": "0.8.1",
+    "version": "0.8.2",
     "description": "A unit library",
     "repository": {
         "type": "git",
@@ -38,10 +38,10 @@
         "@types/bun": "latest",
         "console": "^0.7.2",
         "http-server": "^14.1.1",
-        "prettier": "^3.0.3",
-        "typescript": "^5.2.2",
-        "vite": "^4.4.9",
-        "vite-plugin-dts": "^3.5.3"
+        "prettier": "^3.2.5",
+        "typescript": "^5.4.5",
+        "vite": "^5.2.10",
+        "vite-plugin-dts": "^3.8.3"
     },
     "dependencies": {
         "yeet-ts": "^1.0.3"

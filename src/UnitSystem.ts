@@ -206,7 +206,7 @@ export class UnitSystem<
 
             let unit = '';
             for (let j = i; j <= text.length; ++j) {
-                if (text[j]?.match(/[A-Za-z]/)?.[0]) continue;
+                if (text[j]?.match(/[A-Za-z%_]/)?.[0]) continue;
 
                 if (i == j) {
                     throw unexpected(text[j]);

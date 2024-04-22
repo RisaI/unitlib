@@ -8,4 +8,6 @@ w.Fraction = Fraction;
 w.Unitlib = Unitlib;
 w.Systems = Systems;
 
+w.SI = Systems.SI;
+
 console.log('loaded unitlib');

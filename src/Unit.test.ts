@@ -9,6 +9,7 @@ const fr = (a: number, b?: number) => new Fraction(a, b);
 const baseUnits = {
     ...SIBaseUnits,
     ...IECBaseUnits,
+    '%': {},
 };
 
 const factors = {
@@ -283,6 +284,12 @@ describe('unit parsing', () => {
             const parsed = unitSystem.parseUnit(toParse);
             expect(parsed.isEqual(unit)).toBe(true);
         }
+    });
+
+    test('percent symbol', () => {
+        const c = unitSystem.parseUnit('%');
+
+        expect(c.isEqual(unit({ '%': fr(1) }))).toBe(true);
     });
 });
 
