@@ -1,6 +1,6 @@
 {
     "name": "unitlib",
-    "version": "0.8.2",
+    "version": "0.8.3",
     "description": "A unit library",
     "type": "module",
     "repository": {
@@ -23,11 +23,11 @@
     "exports": {
         ".": {
             "types": "./dist/index.d.ts",
-            "import": "./dist/index.mjs"
+            "import": "./dist/index.js"
         },
         "./systems": {
             "types": "./dist/systems.d.ts",
-            "import": "./dist/systems.mjs"
+            "import": "./dist/systems.js"
         }
     },
     "scripts": {
