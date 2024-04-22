@@ -2,6 +2,7 @@
     "name": "unitlib",
     "version": "0.8.2",
     "description": "A unit library",
+    "type": "module",
     "repository": {
         "type": "git",
         "url": "git+https://github.com/RisaI/unitlib.git"
