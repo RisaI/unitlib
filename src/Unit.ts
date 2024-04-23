@@ -2,14 +2,16 @@ import Fraction from 'fraction.js';
 
 import { UnitSystem } from './UnitSystem.ts';
 
-import type {
-    BaseUnitDefinition,
-    DerivedUnitDefinition,
-    FactorDefinition,
-    UnitFormatExponentPart,
-    UnitFormatOptions,
-    UnitFormatPart,
-    UnitFormatUnitPart,
+import {
+    TYPE_TAG,
+    UNIT_TYPE,
+    type BaseUnitDefinition,
+    type DerivedUnitDefinition,
+    type FactorDefinition,
+    type UnitFormatExponentPart,
+    type UnitFormatOptions,
+    type UnitFormatPart,
+    type UnitFormatUnitPart,
 } from './types.ts';
 import { factorPow, normalizeFactor, toUnicodeSuperscript } from './utils.ts';
 import {
@@ -35,6 +37,7 @@ export class Unit<
         public readonly factor: FactorDefinition,
         public readonly baseUnits: Partial<Record<keyof U, Fraction>>,
     ) {
+        (this as any)[TYPE_TAG] = UNIT_TYPE;
         Object.freeze(this);
     }
 

@@ -1,5 +1,6 @@
 import Fraction from 'fraction.js';
 import { Quantity } from './Quantity';
+import { isQuantity } from './types';
 import { SI } from './systems';
 import { describe, test, expect } from 'bun:test';
 
@@ -16,6 +17,17 @@ describe('Quantity', () => {
             const q = new Quantity(42, SI.parseUnit('kg'));
             expect(Object.isFrozen(q)).toBe(true);
         });
+    });
+
+    test('isQuantity', () => {
+        expect(isQuantity(4)).toBeFalse();
+        expect(isQuantity({})).toBeFalse();
+        expect(isQuantity([])).toBeFalse();
+        expect(isQuantity(SI.parseUnit('km'))).toBeFalse();
+
+        expect(isQuantity(new Quantity(42, SI.parseUnit('kg')))).toBeTrue();
+        expect(isQuantity(new Quantity(500, SI.parseUnit('ms')))).toBeTrue();
+        expect(isQuantity(new Quantity(1764, SI.parseUnit('m^2')))).toBeTrue();
     });
 
     describe('negative', () => {

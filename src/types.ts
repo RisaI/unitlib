@@ -1,4 +1,19 @@
 import Fraction from 'fraction.js';
+import type { Unit } from './Unit';
+import type { Quantity } from './Quantity';
+
+export const TYPE_TAG = '__unitlib_type';
+export const UNIT_TYPE = 'Unit';
+export const QUANTITY_TYPE = 'Quantity';
+
+const typeTagIs = (x: unknown, val: any) =>
+    typeof x === 'object' && x !== null && TYPE_TAG in x && x[TYPE_TAG] === val;
+
+export const isUnit = (x: unknown): x is Unit<any, any, any> =>
+    typeTagIs(x, UNIT_TYPE);
+
+export const isQuantity = (x: unknown): x is Quantity<any, any, any> =>
+    typeTagIs(x, QUANTITY_TYPE);
 
 export interface BaseUnitDefinition {}
 

@@ -1,6 +1,8 @@
 import Fraction from 'fraction.js';
 import { IECFactors, IECBaseUnits, SIBaseUnits, SIFactors } from './systems';
 import { Unit } from './Unit';
+import { isUnit } from './types';
+import { Quantity } from './Quantity';
 import { UnitSystem } from './UnitSystem';
 import { beforeAll, describe, test, expect } from 'bun:test';
 
@@ -45,6 +47,17 @@ describe('unit ops', () => {
         expect(u.exponentOf('A').valueOf()).toBe(-4);
         expect(u.exponentOf('s').valueOf()).toBe(3);
         expect(u.exponentOf('m').valueOf()).toBe(1);
+    });
+
+    test('isUnit', () => {
+        expect(isUnit(4)).toBeFalse();
+        expect(isUnit({})).toBeFalse();
+        expect(isUnit([])).toBeFalse();
+        expect(isUnit(new Quantity(4, unit({})))).toBeFalse();
+
+        expect(isUnit(unit({ m: fr(1) }))).toBeTrue();
+        expect(isUnit(unit({}, { mul: 1, base: 10, exp: fr(0) }))).toBeTrue();
+        expect(isUnit(unitSystem.parseUnit('km'))).toBeTrue();
     });
 
     test('isUnitless', () => {

@@ -1,12 +1,14 @@
 import type Fraction from 'fraction.js';
 import type { Unit } from './Unit.ts';
-import type {
-    BaseUnitDefinition,
-    DerivedUnitDefinition,
-    FactorDefinition,
-    QuantityFormatOptions,
-    UnitFormatExponentPart,
-    UnitFormatPart,
+import {
+    QUANTITY_TYPE,
+    TYPE_TAG,
+    type BaseUnitDefinition,
+    type DerivedUnitDefinition,
+    type FactorDefinition,
+    type QuantityFormatOptions,
+    type UnitFormatExponentPart,
+    type UnitFormatPart,
 } from './types';
 import { ApproximateEqualityThreshold, formatFloat } from './float.ts';
 
@@ -19,6 +21,7 @@ export class Quantity<
         public readonly value: number,
         public readonly unit: Unit<U, F, D>,
     ) {
+        (this as any)[TYPE_TAG] = QUANTITY_TYPE;
         Object.freeze(this);
     }
 
