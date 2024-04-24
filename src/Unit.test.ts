@@ -426,6 +426,21 @@ describe('factor inference', () => {
             expect(u.withBestFactorFor(val).toString()).toEqual(expected);
         }
     });
+
+    test('base with binary factor', () => {
+        const u = unit({ B: fr(1) }, { base: 2, exp: fr(10), mul: 1 });
+
+        const test = [
+            [0.03, 'B'],
+            [225, 'KiB'],
+            [40_000, 'MiB'],
+            [4_000_000, 'GiB'],
+        ] as const;
+
+        for (const [val, expected] of test) {
+            expect(u.withBestFactorFor(val).toString()).toEqual(expected);
+        }
+    });
 });
 
 describe('formating to string', () => {

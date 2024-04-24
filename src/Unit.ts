@@ -27,6 +27,12 @@ export const UnityFactor: FactorDefinition = {
 };
 Object.freeze(UnityFactor);
 
+const mulByFactor = (value: number, { mul, base, exp }: FactorDefinition) =>
+    value * mul * base ** +exp;
+
+const divByFactor = (value: number, { mul, base, exp }: FactorDefinition) =>
+    value / mul / base ** +exp;
+
 export class Unit<
     U extends Record<string, BaseUnitDefinition>,
     F extends Record<string, FactorDefinition>,
@@ -207,9 +213,21 @@ export class Unit<
         );
     }
 
-    public withBestFactorFor(value: number): Unit<U, F, D> {
-        // TODO code review
-
+    /**
+     * Find a more suitable factor for a `value` in the unit this instance represents.
+     *
+     * This method keeps the same base units, but adjusts the factor to represent the value
+     * with the least amount of digits in the non-fractional part.
+     *
+     * @param value A quantity expressed in the unit this instance represents.
+     * @param options Rules for determining the best factor.
+     * @returns A unit with the same baseUnits as `this` but with a more suitable factor for `value`
+     */
+    public withBestFactorFor(
+        value: number,
+        opts?: { allowDifferentBase?: boolean },
+    ): Unit<U, F, D> {
+        // Short-circuit invalid values to either the same unit or base unit.
         if (Number.isNaN(value) || !Number.isFinite(value)) return this;
         if (value === 0)
             return new Unit(this.unitSystem, UnityFactor, {
@@ -217,32 +235,31 @@ export class Unit<
             });
 
         let result:
-            | { prevDist: Fraction; factor: Unit<U, F, D>['factor'] }
+            | { prevDist: number; factor: Unit<U, F, D>['factor'] }
             | undefined;
 
-        [...Object.values(this.unitSystem.factors), UnityFactor].forEach(
-            ({ base, exp, mul }) => {
-                const expInBase = new Fraction(
-                    Math.floor(
-                        (Math.log(Math.abs(value) * (this.factor.mul / mul)) +
-                            +this.factor.exp * Math.log(this.factor.base)) /
-                            Math.log(base),
-                    ),
-                    1,
-                );
-                const dist = expInBase.sub(exp);
+        const inBaseUnits = this.multiplyValueByFactor(value);
+
+        [...Object.values(this.unitSystem.factors), UnityFactor]
+            .filter(
+                (f) =>
+                    opts?.allowDifferentBase ||
+                    f.exp.n === 0 ||
+                    f.base === this.factor.base,
+            )
+            .forEach((factor) => {
+                const logInTarget = Math.log(divByFactor(inBaseUnits, factor));
 
                 if (
-                    dist.valueOf() >= 0 &&
-                    (!result || dist.valueOf() < result.prevDist.valueOf())
+                    logInTarget >= 0 &&
+                    (!result || logInTarget < result.prevDist.valueOf())
                 ) {
                     result = {
-                        prevDist: dist,
-                        factor: { base, exp, mul },
+                        prevDist: logInTarget,
+                        factor: { ...factor },
                     };
                 }
-            },
-        );
+            });
 
         return new Unit(this.unitSystem, result?.factor ?? UnityFactor, {
             ...this.baseUnits,
@@ -259,12 +276,10 @@ export class Unit<
      * // because 2 km = 2 000 m
      */
     public multiplyValueByFactor(value: number): number {
-        const { mul, base, exp } = this.factor;
-        if (exp.valueOf() === 0 && mul === 1) return value;
+        if (this.factor.exp.valueOf() === 0 && this.factor.mul === 1)
+            return value;
 
-        // !TODO compare precision
-        return value * mul * base ** +exp;
-        // return Math.exp(Math.log(mul * value) + +exp * Math.log(base));
+        return mulByFactor(value, this.factor);
     }
 
     /**
@@ -277,12 +292,10 @@ export class Unit<
      * // because 2 000 m = 2 km
      */
     public divideValueByFactor(value: number): number {
-        const { mul, base, exp } = this.factor;
+        const { mul, exp } = this.factor;
         if (exp.valueOf() === 0 && mul === 1) return value;
 
-        // !TODO compare precision
-        return value / (mul * base ** +exp);
-        // return Math.exp(Math.log(value / mul) - exp * Math.log(base));
+        return divByFactor(value, this.factor);
     }
 
     /**
