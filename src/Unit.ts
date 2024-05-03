@@ -47,6 +47,14 @@ export class Unit<
         Object.freeze(this);
     }
 
+    public clone(): Unit<U, F, D> {
+        return new Unit(
+            this.unitSystem,
+            { ...this.factor },
+            { ...this.baseUnits },
+        );
+    }
+
     // From specific unit
     public exponentOf(baseUnit: keyof U): Fraction {
         return this.baseUnits[baseUnit] ?? new Fraction(0);
