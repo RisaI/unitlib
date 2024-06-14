@@ -163,12 +163,15 @@ describe('Quantity', () => {
 
     describe('toString', () => {
         test('should return a string representation of the quantity', () => {
-            const q = new Quantity(42, SI.parseUnit('m'));
+            let q = new Quantity(42, SI.parseUnit('m'));
             expect(q.toString()).toBe('42 m');
-        });
-        test('should return a string representation of the quantity', () => {
-            const q = new Quantity(3, SI.parseUnit('km'));
+
+            q = new Quantity(3, SI.parseUnit('km'));
             expect(q.toString()).toBe('3 km');
+        });
+        test('should not omit unity for quantities', () => {
+            const q = new Quantity(1, SI.parseUnit('km'));
+            expect(q.toString()).toBe('1 km');
         });
     });
 });

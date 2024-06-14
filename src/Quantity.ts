@@ -146,7 +146,6 @@ export class Quantity<
 
         /* Formatting */
 
-        if (this.value === 1) return this.unit.toParts(opts);
         if (this.unit.isUnitless) {
             const value = this.unit.multiplyValueByFactor(this.value);
             return [
