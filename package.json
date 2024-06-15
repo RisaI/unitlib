@@ -18,6 +18,9 @@
         "url": "https://github.com/RisaI/unitlib/issues"
     },
     "homepage": "https://github.com/RisaI/unitlib#readme",
+    "files": [
+        "dist"
+    ],
     "module": "dist/",
     "types": "dist/index.d.ts",
     "exports": {

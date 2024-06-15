@@ -1,8 +1,0 @@
-src/
-coverage/
-.prettierrc
-jest.config.ts
-vite.config.ts
-tsconfig.json
-yarn.lock
-index.html
