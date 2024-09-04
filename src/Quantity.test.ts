@@ -173,7 +173,7 @@ describe('Quantity', () => {
             const q = new Quantity(1, SI.parseUnit('km'));
             expect(q.toString()).toBe('1 km');
         });
-        test('should properly take options into account', () => {
+        test('should properly take decimal places into account', () => {
             let q = new Quantity(1.88, SI.parseUnit('m'));
             expect(q.toString({ decimalPlaces: 1 })).toBe('1.9 m');
             q = new Quantity(1.8, SI.parseUnit('m'));
