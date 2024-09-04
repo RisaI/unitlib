@@ -119,7 +119,10 @@ export function formatFloat(
 
     const fractionalPart = Math.abs(n) % 1;
     const fractionalDigits = BigInt(
-        roundFloat(fractionalPart * 10 ** decimalPlaces, roundingStrategy),
+        roundFloat(
+            fractionalPart * 10 ** decimalPlaces,
+            decimalPlaces === 0 ? 'down' : roundingStrategy,
+        ),
     );
 
     const result: string[] = [];
