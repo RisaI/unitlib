@@ -178,6 +178,11 @@ describe('Quantity', () => {
             expect(q.toString({ decimalPlaces: 1 })).toBe('1.9 m');
             q = new Quantity(1.8, SI.parseUnit('m'));
             expect(q.toString({ decimalPlaces: 0 })).toBe('2 m');
+
+            q = new Quantity(2.1, SI.parseUnit('m'));
+            expect(q.toString({ decimalPlaces: 0 })).toBe('2 m');
+            q = new Quantity(2.11, SI.parseUnit('m'));
+            expect(q.toString({ decimalPlaces: 1 })).toBe('2.1 m');
         });
     });
 });
