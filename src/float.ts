@@ -140,7 +140,7 @@ export function formatFloat(
               ),
     );
 
-    if (fractionalDigits !== 0n) {
+    if (decimalPlaces > 0) {
         result.push(fractionalPartSeparator);
         const fractionalDigitsStr = fractionalDigits
             .toString()
