@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.8.11](https://github.com/RisaI/unitlib/compare/unitlib-v0.8.10...unitlib-v0.8.11) (2024-09-04)
+
+
+### Bug Fixes
+
+* fixed rounding of whole numbers ([2dbdd89](https://github.com/RisaI/unitlib/commit/2dbdd89d01d45397c048f1dc4596e1259d776716))
+
 ## [0.8.10](https://github.com/RisaI/unitlib/compare/unitlib-v0.8.9...unitlib-v0.8.10) (2024-09-04)
 
 
