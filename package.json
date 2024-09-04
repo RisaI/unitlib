@@ -1,6 +1,6 @@
 {
     "name": "unitlib",
-    "version": "0.8.9",
+    "version": "0.8.10",
     "description": "A unit library",
     "type": "module",
     "repository": {
