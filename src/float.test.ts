@@ -1,4 +1,4 @@
-import { absDistance, relDistance, ulpDistance } from './float';
+import { absDistance, formatFloat, relDistance, ulpDistance } from './float';
 import { describe, test, expect } from 'bun:test';
 
 const values = [
@@ -87,5 +87,13 @@ describe('float approx equals', () => {
         for (const x of values) {
             expect(ulpDistance(-x, x)).toBe(2 * ulpDistance(0, x));
         }
+    });
+});
+
+describe('float formatting', () => {
+    test('doesnt round 0.95 up to 0.10', () => {
+        expect(formatFloat(0.95, { decimalPlaces: 2 })).toBe('0.95');
+        expect(formatFloat(0.95, { decimalPlaces: 1 })).toBe('1.0');
+        expect(formatFloat(0.95, { decimalPlaces: 0 })).toBe('1');
     });
 });

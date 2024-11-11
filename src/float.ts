@@ -110,20 +110,20 @@ export function formatFloat(
 
     const sign = Math.sign(n);
 
-    const integerPart = BigInt(
-        roundFloat(
-            Math.abs(n),
-            decimalPlaces === 0 ? roundingStrategy : 'down',
-        ),
+    let integerPart = BigInt(
+        roundFloat(n, decimalPlaces === 0 ? roundingStrategy : 'down'),
     );
 
     const fractionalPart = Math.abs(n) % 1;
-    const fractionalDigits = BigInt(
+    let fractionalDigits = BigInt(
         roundFloat(
             fractionalPart * 10 ** decimalPlaces,
             decimalPlaces === 0 ? 'down' : roundingStrategy,
         ),
     );
+
+    integerPart += fractionalDigits / 10n ** BigInt(decimalPlaces);
+    fractionalDigits %= 10n ** BigInt(decimalPlaces);
 
     const result: string[] = [];
     if (sign < 0) result.push(minusSign);
@@ -226,3 +226,5 @@ export function roundFloat(n: number, strategy: RoundingStrategy): number {
             return Math.random() < 0.5 ? floor : ceil;
     }
 }
+
+formatFloat(0.95, { decimalPlaces: 1 }); // 0.95
