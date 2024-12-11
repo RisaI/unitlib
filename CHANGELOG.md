@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.9.1](https://github.com/RisaI/unitlib/compare/unitlib-v0.9.0...unitlib-v0.9.1) (2024-12-11)
+
+
+### Bug Fixes
+
+* fixed formatting of negative numbers, added tests ([243db7b](https://github.com/RisaI/unitlib/commit/243db7ba01ab9b6eb637ff14c038ec3d61ec2829))
+
 ## [0.9.0](https://github.com/RisaI/unitlib/compare/unitlib-v0.8.11...unitlib-v0.9.0) (2024-11-11)
 
 
