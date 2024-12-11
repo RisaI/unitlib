@@ -96,4 +96,126 @@ describe('float formatting', () => {
         expect(formatFloat(0.95, { decimalPlaces: 1 })).toBe('1.0');
         expect(formatFloat(0.95, { decimalPlaces: 0 })).toBe('1');
     });
+
+    test('chooses correct minus sign', () => {
+        expect(formatFloat(-1, { fancyUnicode: false })).toBe('-1');
+        expect(formatFloat(-1, { fancyUnicode: true })).toBe('−1');
+    });
+    test('formats numbers with different decimal places', () => {
+        expect(formatFloat(1234.5678, { decimalPlaces: 2 })).toBe('1234.57');
+        expect(formatFloat(1234.5678, { decimalPlaces: 1 })).toBe('1234.6');
+        expect(formatFloat(1234.5678, { decimalPlaces: 0 })).toBe('1235');
+    });
+
+    test('handles rounding strategies', () => {
+        expect(
+            formatFloat(1234.5678, {
+                decimalPlaces: 2,
+                roundingStrategy: 'up',
+            }),
+        ).toBe('1234.57');
+        expect(
+            formatFloat(1234.5678, {
+                decimalPlaces: 2,
+                roundingStrategy: 'down',
+            }),
+        ).toBe('1234.56');
+        expect(
+            formatFloat(1234.5678, {
+                decimalPlaces: 2,
+                roundingStrategy: 'half-up',
+            }),
+        ).toBe('1234.57');
+        expect(
+            formatFloat(1234.5678, {
+                decimalPlaces: 2,
+                roundingStrategy: 'half-down',
+            }),
+        ).toBe('1234.57');
+        expect(
+            formatFloat(1234.5678, {
+                decimalPlaces: 2,
+                roundingStrategy: 'half-to-even',
+            }),
+        ).toBe('1234.57');
+        expect(
+            formatFloat(1234.5678, {
+                decimalPlaces: 2,
+                roundingStrategy: 'half-to-odd',
+            }),
+        ).toBe('1234.57');
+    });
+
+    test('handles fancyUnicode option', () => {
+        expect(
+            formatFloat(-1234.5678, { decimalPlaces: 2, fancyUnicode: false }),
+        ).toBe('-1234.57');
+        expect(
+            formatFloat(-1234.5678, { decimalPlaces: 2, fancyUnicode: true }),
+        ).toBe('−1234.57');
+    });
+
+    test('handles digit grouping', () => {
+        expect(
+            formatFloat(1234567.89, {
+                decimalPlaces: 2,
+                digitGroupLength: 3,
+                digitGroupSeparator: ',',
+            }),
+        ).toBe('1,234,567.89');
+        expect(
+            formatFloat(1234567.89, {
+                decimalPlaces: 2,
+                digitGroupLength: 2,
+                digitGroupSeparator: ' ',
+            }),
+        ).toBe('1 23 45 67.89');
+    });
+
+    test('handles fractional part separator', () => {
+        expect(
+            formatFloat(1234.5678, {
+                decimalPlaces: 2,
+                fractionalPartSeparator: ',',
+            }),
+        ).toBe('1234,57');
+    });
+
+    test('handles negative numbers', () => {
+        expect(formatFloat(-1234.5678, { decimalPlaces: 2 })).toBe('-1234.57');
+        expect(formatFloat(-1234.5678, { decimalPlaces: 1 })).toBe('-1234.6');
+        expect(formatFloat(-1234.5678, { decimalPlaces: 0 })).toBe('-1235');
+    });
+
+    test('handles zero', () => {
+        expect(formatFloat(0, { decimalPlaces: 2 })).toBe('0.00');
+        expect(formatFloat(0, { decimalPlaces: 0 })).toBe('0');
+    });
+
+    test('handles large numbers', () => {
+        expect(formatFloat(1e20, { decimalPlaces: 2 })).toBe(
+            '100000000000000000000.00',
+        );
+        expect(formatFloat(-1e20, { decimalPlaces: 2 })).toBe(
+            '-100000000000000000000.00',
+        );
+    });
+
+    test('handles small numbers', () => {
+        expect(formatFloat(1e-20, { decimalPlaces: 22 })).toBe(
+            '0.0000000000000000000100',
+        );
+        expect(formatFloat(-1e-20, { decimalPlaces: 22 })).toBe(
+            '-0.0000000000000000000100',
+        );
+        expect(formatFloat(1e-20, { decimalPlaces: 19 })).toBe(
+            '0.0000000000000000000',
+        );
+        expect(formatFloat(-1e-20, { decimalPlaces: 19 })).toBe(
+            '0.0000000000000000000',
+        );
+        expect(
+            formatFloat(-1e-20, { decimalPlaces: 19, allowNegativeZero: true }),
+        ).toBe('-0.0000000000000000000');
+    });
 });

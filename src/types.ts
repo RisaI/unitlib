@@ -43,6 +43,7 @@ export type RoundingStrategy =
 
 export interface NumberFormatOptions {
     fancyUnicode?: boolean;
+    allowNegativeZero?: boolean;
 
     fractionalPartSeparator?: string;
     decimalPlaces?: number;

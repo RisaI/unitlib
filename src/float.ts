@@ -100,6 +100,7 @@ export function formatFloat(
         digitGroupLength,
         digitGroupSeparator,
         fractionalPartSeparator,
+        allowNegativeZero,
     }: NumberFormatOptions,
 ): string {
     fractionalPartSeparator ??= '.';
@@ -111,7 +112,7 @@ export function formatFloat(
     const sign = Math.sign(n);
 
     let integerPart = BigInt(
-        roundFloat(n, decimalPlaces === 0 ? roundingStrategy : 'down'),
+        roundFloat(n, decimalPlaces === 0 ? roundingStrategy : 'toward-zero'),
     );
 
     const fractionalPart = Math.abs(n) % 1;
@@ -126,7 +127,15 @@ export function formatFloat(
     fractionalDigits %= 10n ** BigInt(decimalPlaces);
 
     const result: string[] = [];
-    if (sign < 0) result.push(minusSign);
+    if (sign < 0) {
+        integerPart *= BigInt(sign);
+        if (
+            allowNegativeZero ||
+            fractionalDigits !== BigInt(0) ||
+            integerPart !== BigInt(0)
+        )
+            result.push(minusSign);
+    }
 
     const integerPartStr = integerPart.toString();
     result.push(
@@ -186,7 +195,6 @@ function groupAndSeparate(
 export function roundFloat(n: number, strategy: RoundingStrategy): number {
     const ceil = Math.ceil(n);
     const floor = Math.floor(n);
-
     switch (strategy) {
         case 'up':
             return ceil;
@@ -227,4 +235,4 @@ export function roundFloat(n: number, strategy: RoundingStrategy): number {
     }
 }
 
-formatFloat(0.95, { decimalPlaces: 1 }); // 0.95
+console.log(formatFloat(-1e-20, { decimalPlaces: 19 }));
