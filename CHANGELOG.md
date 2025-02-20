@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.10.0](https://github.com/RisaI/unitlib/compare/unitlib-v0.9.1...unitlib-v0.10.0) (2025-02-20)
+
+
+### Features
+
+* add more nuanced options for compact formatting ([53abe67](https://github.com/RisaI/unitlib/commit/53abe6796eee7c74439cbc8ac2f05372e7b20770))
+
 ## [0.9.1](https://github.com/RisaI/unitlib/compare/unitlib-v0.9.0...unitlib-v0.9.1) (2024-12-11)
 
 
