@@ -13,7 +13,12 @@ import {
     type UnitFormatPart,
     type UnitFormatUnitPart,
 } from './types.ts';
-import { factorPow, normalizeFactor, toUnicodeSuperscript } from './utils.ts';
+import {
+    factorPow,
+    normalizeFactor,
+    parseCompactConfig,
+    toUnicodeSuperscript,
+} from './utils.ts';
 import {
     ApproximateEqualityThreshold,
     areApproximatelyEqual,
@@ -347,8 +352,15 @@ export class Unit<
     }
 
     public toParts(opts: UnitFormatOptions = {}): UnitFormatPart[] {
+        const {
+            spaceAfterNumericPart,
+            spacesAroundDivision,
+            spacesAroundMultiplication,
+        } = parseCompactConfig(opts.compact);
+
         /* Helper functions */
-        const pad = (str: string) => (opts.compact ? str : ` ${str} `);
+        const pad = (really: boolean, str: string) =>
+            really ? ` ${str} ` : str;
         const unitPart = (): UnitFormatPart => ({
             type: 'multiplicator',
             string: '1',
@@ -356,11 +368,14 @@ export class Unit<
         });
         const mulSign = (): UnitFormatPart => ({
             type: 'multiplicationSign',
-            string: pad(opts.fancyUnicode ? '·' : '*'),
+            string: pad(
+                spacesAroundMultiplication,
+                opts.fancyUnicode ? '·' : '*',
+            ),
         });
         const divSign = (): UnitFormatPart => ({
             type: 'divisionSign',
-            string: pad('/'),
+            string: pad(spacesAroundDivision, '/'),
         });
         const expParts = (exp: Fraction): UnitFormatExponentPart[] =>
             +exp === 1
@@ -501,7 +516,7 @@ export class Unit<
             const partsToAdd = factorInExponentialForm(this.factor);
 
             // Add a space if needed
-            if (!opts.compact && numerator.length > 0) {
+            if (spaceAfterNumericPart && numerator.length > 0) {
                 const lastPart = partsToAdd.at(-1);
                 if (lastPart) lastPart.string += ' ';
             }

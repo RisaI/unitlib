@@ -234,5 +234,3 @@ export function roundFloat(n: number, strategy: RoundingStrategy): number {
             return Math.random() < 0.5 ? floor : ceil;
     }
 }
-
-console.log(formatFloat(-1e-20, { decimalPlaces: 19 }));

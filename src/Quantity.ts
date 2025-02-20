@@ -11,6 +11,7 @@ import {
     type UnitFormatPart,
 } from './types';
 import { ApproximateEqualityThreshold, formatFloat } from './float.ts';
+import { parseCompactConfig } from './utils.ts';
 
 export class Quantity<
     U extends Record<string, BaseUnitDefinition>,
@@ -137,11 +138,19 @@ export class Quantity<
     }
 
     public toParts(opts: QuantityFormatOptions = {}): UnitFormatPart[] {
+        const { spaceAfterNumericPart, spacesAroundMultiplication } =
+            parseCompactConfig(opts.compact);
+
         /* Helper functions */
-        const pad = (str: string) => (opts.compact ? str : ` ${str} `);
+        const pad = (really: boolean, str: string) =>
+            really ? ` ${str} ` : str;
+
         const mulSign = (): UnitFormatPart => ({
             type: 'multiplicationSign',
-            string: pad(opts.fancyUnicode ? '·' : '*'),
+            string: pad(
+                spacesAroundMultiplication,
+                opts.fancyUnicode ? '·' : '*',
+            ),
         });
 
         /* Formatting */
@@ -177,7 +186,7 @@ export class Quantity<
             number: value,
             string: formatFloat(value, opts),
         };
-        if (parts[0]?.type === 'unit' && !opts.compact) {
+        if (parts[0]?.type === 'unit' && spaceAfterNumericPart) {
             valuePart.string += ' ';
         }
 

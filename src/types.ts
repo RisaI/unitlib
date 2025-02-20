@@ -41,6 +41,12 @@ export type RoundingStrategy =
     | 'half-to-odd'
     | 'half-random';
 
+export interface Compactness {
+    spaceAfterNumericPart?: boolean;
+    spacesAroundDivision?: boolean;
+    spacesAroundMultiplication?: boolean;
+}
+
 export interface NumberFormatOptions {
     fancyUnicode?: boolean;
     allowNegativeZero?: boolean;
@@ -54,7 +60,7 @@ export interface NumberFormatOptions {
 }
 
 export interface UnitFormatOptions extends NumberFormatOptions {
-    compact?: boolean;
+    compact?: boolean | Compactness;
     forceExponential?: boolean;
     useNegativeExponents?: boolean;
     omitDenominatorParens?: boolean;

@@ -1,5 +1,5 @@
 import Fraction from 'fraction.js';
-import { FactorDefinition } from './types.ts';
+import { Compactness, FactorDefinition } from './types.ts';
 
 export const divideFactors = (
     a: Readonly<FactorDefinition>,
@@ -71,4 +71,15 @@ export function toUnicodeSuperscript(exponent: string) {
     }
 
     return result;
+}
+
+export function parseCompactConfig(compact: boolean | Compactness | undefined) {
+    const get = <K extends keyof Compactness>(k: K): boolean =>
+        typeof compact === 'object' ? compact[k] ?? true : !compact;
+
+    return {
+        spaceAfterNumericPart: get('spaceAfterNumericPart'),
+        spacesAroundDivision: get('spacesAroundDivision'),
+        spacesAroundMultiplication: get('spacesAroundMultiplication'),
+    };
 }
