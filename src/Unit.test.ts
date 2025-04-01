@@ -1,4 +1,4 @@
-import Fraction from 'fraction.js';
+import { Fraction } from 'fraction.js';
 import { IECFactors, IECBaseUnits, SIBaseUnits, SIFactors } from './systems';
 import { Unit } from './Unit';
 import { isUnit } from './types';

@@ -1,4 +1,4 @@
-import Fraction from 'fraction.js';
+import { Fraction } from 'fraction.js';
 import { Compactness, FactorDefinition } from './types.ts';
 
 export const divideFactors = (

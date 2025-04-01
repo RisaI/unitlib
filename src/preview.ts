@@ -1,4 +1,4 @@
-import Fraction from 'fraction.js';
+import { Fraction } from 'fraction.js';
 import * as Unitlib from './index';
 import * as Systems from './systems';
 

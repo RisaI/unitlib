@@ -1,4 +1,4 @@
-import Fraction from 'fraction.js';
+import { Fraction } from 'fraction.js';
 
 import { UnitSystem } from './UnitSystem.ts';
 
@@ -257,7 +257,7 @@ export class Unit<
             .filter(
                 (f) =>
                     opts?.allowDifferentBase ||
-                    f.exp.n === 0 ||
+                    f.exp.n === BigInt(0) ||
                     f.base === this.factor.base,
             )
             .forEach((factor) => {

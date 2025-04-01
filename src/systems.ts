@@ -1,4 +1,4 @@
-import Fraction from 'fraction.js';
+import { Fraction } from 'fraction.js';
 import { UnitSystem } from './UnitSystem.ts';
 import type { BaseUnitDefinition, FactorDefinition } from './types.ts';
 

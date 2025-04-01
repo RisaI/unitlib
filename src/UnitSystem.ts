@@ -1,4 +1,4 @@
-import Fraction from 'fraction.js';
+import { Fraction } from 'fraction.js';
 
 import { Unit, UnityFactor } from './Unit.ts';
 

@@ -1,4 +1,4 @@
-import Fraction from 'fraction.js';
+import { Fraction } from 'fraction.js';
 import type { Unit } from './Unit';
 import type { Quantity } from './Quantity';
 
