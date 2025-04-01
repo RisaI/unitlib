@@ -25,7 +25,7 @@ jobs:
       - name: Install dependencies
         run: bun install
       - name: Build libchartium
-        run: bun build
+        run: bun run build
       - name: Publish libchartium
         run: bun publish
         env:
