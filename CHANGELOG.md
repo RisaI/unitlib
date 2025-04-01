@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.11.1](https://github.com/RisaI/unitlib/compare/unitlib-v0.11.0...unitlib-v0.11.1) (2025-04-01)
+
+
+### Bug Fixes
+
+* **ci:** use proper bun command for building ([ea827b2](https://github.com/RisaI/unitlib/commit/ea827b27a4b1c592e48db4a47751046edc8dd2ae))
+
 ## [0.11.0](https://github.com/RisaI/unitlib/compare/unitlib-v0.10.0...unitlib-v0.11.0) (2025-04-01)
 
 
