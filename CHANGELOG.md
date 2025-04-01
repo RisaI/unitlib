@@ -1,5 +1,16 @@
 # Changelog
 
+## [0.11.0](https://github.com/RisaI/unitlib/compare/unitlib-v0.10.0...unitlib-v0.11.0) (2025-04-01)
+
+
+### ⚠ BREAKING CHANGES
+
+* move to bun tooling, bump fraction.js peerDependency to v5
+
+### Features
+
+* move to bun tooling, bump fraction.js peerDependency to v5 ([3bbf214](https://github.com/RisaI/unitlib/commit/3bbf214409283fe6a601a37ef5a71f3c18910fb6))
+
 ## [0.10.0](https://github.com/RisaI/unitlib/compare/unitlib-v0.9.1...unitlib-v0.10.0) (2025-02-20)
 
 
